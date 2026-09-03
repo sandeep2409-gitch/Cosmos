@@ -47,4 +47,33 @@ export class CosmosApi {
     }
     return null;
   }
+
+  /**
+   * POST /api/v1/ai/explain — request AI explanation for a celestial object
+   * @param {string} id - Object ID (e.g. 'earth', 'moon', 'aryabhata')
+   * @param {string} mode - 'beginner' | 'student' | 'deepdive'
+   * @param {string|null} question - Optional custom question
+   * @returns {Promise<{success:boolean, explanation?:string, error?:string, errorCode?:string}>}
+   */
+  static async getAIExplanation(id, mode = 'beginner', question = null) {
+    try {
+      const body = { objectId: id, mode };
+      if (question) body.question = question;
+
+      const response = await fetch(`${this.baseUrl}/ai/explain`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        return json;
+      }
+      return { success: false, error: 'AI service returned an error.', errorCode: 'HTTP_ERROR' };
+    } catch (err) {
+      console.warn(`[COSMOS API] AI backend endpoint unreachable for '${id}'.`);
+      return { success: false, error: 'AI service is not reachable. Check that the backend server is running.', errorCode: 'NETWORK_ERROR' };
+    }
+  }
 }

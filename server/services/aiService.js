@@ -210,9 +210,94 @@ ${question
   }
 
   /**
-   * Call the AI provider (OpenAI-compatible REST API)
+   * Call the AI provider — supports both Gemini and OpenAI-compatible APIs
    */
   static async _callProvider(apiUrl, systemPrompt, userPrompt, maxTokens) {
+    const isGemini = apiUrl.includes('generativelanguage.googleapis.com') || apiUrl.includes('gemini');
+
+    if (isGemini) {
+      return this._callGemini(apiUrl, systemPrompt, userPrompt, maxTokens);
+    }
+    return this._callOpenAICompat(apiUrl, systemPrompt, userPrompt, maxTokens);
+  }
+
+  /**
+   * Call Google Gemini API
+   * URL format: https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key=...
+   */
+  static async _callGemini(apiUrl, systemPrompt, userPrompt, maxTokens) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.REQUEST_TIMEOUT_MS);
+
+    // Build Gemini endpoint URL — append model and key
+    const model = ENV.AI_MODEL || 'gemini-1.5-flash';
+    let endpoint;
+    if (apiUrl.includes(':generateContent')) {
+      // Full URL already provided (e.g. with model embedded)
+      endpoint = apiUrl.includes('key=') ? apiUrl : `${apiUrl}?key=${ENV.AI_API_KEY}`;
+    } else {
+      // Base URL like https://generativelanguage.googleapis.com/v1beta/models
+      // Correct Gemini REST API format: /v1beta/models/{model}:generateContent
+      const base = apiUrl.replace(/\/$/, '');
+      endpoint = `${base}/${model}:generateContent?key=${ENV.AI_API_KEY}`;
+    }
+
+    // Debug: log endpoint without key value for diagnosis
+    const safeEndpoint = endpoint.replace(/key=[^&]+/, 'key=***');
+    console.log(`[AIService] Gemini endpoint: ${safeEndpoint}`);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: {
+            parts: [{ text: systemPrompt }]
+          },
+          contents: [
+            { role: 'user', parts: [{ text: userPrompt }] }
+          ],
+          generationConfig: {
+            maxOutputTokens: maxTokens,
+            temperature: 0.6,
+            candidateCount: 1
+          }
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      if (response.status === 400) {
+        const errBody = await response.json().catch(() => ({}));
+        const msg = errBody?.error?.message || '';
+        if (msg.includes('API key')) throw new Error('AI_AUTH_FAILED');
+        throw new Error('AI_INVALID_REQUEST');
+      }
+      if (response.status === 401 || response.status === 403) throw new Error('AI_AUTH_FAILED');
+      if (response.status === 429) throw new Error('AI_RATE_LIMITED');
+      if (response.status === 503 || response.status === 502) throw new Error('AI_PROVIDER_UNAVAILABLE');
+      if (!response.ok) throw new Error(`AI_HTTP_${response.status}`);
+
+      const json = await response.json();
+
+      // Validate Gemini response structure
+      const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (!text || text.trim().length < 20) throw new Error('AI_EMPTY_RESPONSE');
+
+      return text.trim();
+
+    } catch (err) {
+      clearTimeout(timeout);
+      if (err.name === 'AbortError') throw new Error('AI_TIMEOUT');
+      throw err;
+    }
+  }
+
+  /**
+   * Call OpenAI-compatible API (Groq, OpenAI, Mistral, Ollama, etc.)
+   */
+  static async _callOpenAICompat(apiUrl, systemPrompt, userPrompt, maxTokens) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.REQUEST_TIMEOUT_MS);
 
@@ -238,38 +323,21 @@ ${question
 
       clearTimeout(timeout);
 
-      if (response.status === 401) {
-        throw new Error('AI_AUTH_FAILED');
-      }
-      if (response.status === 429) {
-        throw new Error('AI_RATE_LIMITED');
-      }
-      if (response.status === 503 || response.status === 502) {
-        throw new Error('AI_PROVIDER_UNAVAILABLE');
-      }
-      if (!response.ok) {
-        throw new Error(`AI_HTTP_${response.status}`);
-      }
+      if (response.status === 401) throw new Error('AI_AUTH_FAILED');
+      if (response.status === 429) throw new Error('AI_RATE_LIMITED');
+      if (response.status === 503 || response.status === 502) throw new Error('AI_PROVIDER_UNAVAILABLE');
+      if (!response.ok) throw new Error(`AI_HTTP_${response.status}`);
 
       const json = await response.json();
 
-      // Validate response structure
-      if (!json.choices || !json.choices[0] || !json.choices[0].message || !json.choices[0].message.content) {
-        throw new Error('AI_INVALID_RESPONSE');
-      }
-
-      const text = json.choices[0].message.content.trim();
-      if (!text || text.length < 20) {
-        throw new Error('AI_EMPTY_RESPONSE');
-      }
+      const text = json.choices?.[0]?.message?.content?.trim();
+      if (!text || text.length < 20) throw new Error('AI_EMPTY_RESPONSE');
 
       return text;
 
     } catch (err) {
       clearTimeout(timeout);
-      if (err.name === 'AbortError') {
-        throw new Error('AI_TIMEOUT');
-      }
+      if (err.name === 'AbortError') throw new Error('AI_TIMEOUT');
       throw err;
     }
   }
@@ -312,14 +380,19 @@ ${question
   static _classifyError(objectId, mode, err) {
     const msg = err.message || '';
     const map = {
-      'AI_AUTH_FAILED': 'The AI API key is invalid or expired.',
-      'AI_RATE_LIMITED': 'The AI service is temporarily rate limited. Please try again in a moment.',
-      'AI_PROVIDER_UNAVAILABLE': 'The AI provider is temporarily unavailable.',
-      'AI_TIMEOUT': 'The AI request timed out. Please try again.',
-      'AI_INVALID_RESPONSE': 'The AI returned an unexpected response format.',
-      'AI_EMPTY_RESPONSE': 'The AI returned an empty response.'
+      'AI_AUTH_FAILED':           'The AI API key is invalid or expired. Please check AI_API_KEY in your .env file.',
+      'AI_RATE_LIMITED':          'The AI service is temporarily rate limited. Please try again in a moment.',
+      'AI_PROVIDER_UNAVAILABLE':  'The AI provider is temporarily unavailable. Please try again later.',
+      'AI_TIMEOUT':               'The AI request timed out. Please try again.',
+      'AI_INVALID_RESPONSE':      'The AI returned an unexpected response format.',
+      'AI_EMPTY_RESPONSE':        'The AI returned an empty response. Please try again.',
+      'AI_INVALID_REQUEST':       'The AI API rejected the request. Please check your AI_MODEL setting in .env.',
+      'AI_HTTP_404':              'AI model not found. Please verify AI_MODEL and AI_API_URL in your .env file.',
+      'AI_HTTP_400':              'Bad request to AI provider. Please verify your API key and model name in .env.',
+      'AI_HTTP_403':              'The AI API key does not have permission. Please check your Gemini API key.',
+      'AI_KEY_MISSING':           'No AI API key configured. Please add AI_API_KEY to your .env file.'
     };
-    const humanMsg = map[msg] || 'An unexpected error occurred with the AI service.';
+    const humanMsg = map[msg] || `AI service error (${msg || 'unknown'}). Check the server logs for details.`;
     return this._errorResponse(objectId, mode, msg || 'AI_ERROR', humanMsg);
   }
 

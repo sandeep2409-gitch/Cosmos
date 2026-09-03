@@ -113,8 +113,8 @@ export class PlanetFactory {
       const atmosGeo = new THREE.SphereGeometry(config.radius * 1.04, 64, 64);
       const atmosMat = Shaders.createAtmosphereMaterial(
         config.atmosphereColor || config.color,
-        5.5,
-        1.1
+        4.0,
+        0.75
       );
       const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
       planetContainer.add(atmosMesh);

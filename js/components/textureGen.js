@@ -186,126 +186,11 @@ export class TextureGenerator {
   }
 
   static generateEarthTexture() {
-    const W = 4096, H = 2048;
-    const { canvas, ctx } = this.createCanvas(W, H);
-    const imgData = ctx.createImageData(W, H);
-    const d = imgData.data;
-
-    for (let y = 0; y < H; y++) {
-      for (let x = 0; x < W; x++) {
-        const u = x / W;
-        const v = y / H;
-        const lat = (v - 0.5) * Math.PI;      // -π/2 to π/2
-        const lon = (u - 0.5) * Math.PI * 2;  // -π to π
-        const absLat = Math.abs(lat);
-
-        // Spherical coords for noise sampling
-        const p3d = this.uvTo3D(u, v);
-
-        // ---- Land mask using multiple noise octaves ----
-        const continentNoise   = perlin.fBm(p3d.x * 2.1, p3d.y * 2.1, p3d.z * 2.1, 7, 0.56);
-        const coastlineDetail  = perlin.fBm(p3d.x * 5.5, p3d.y * 5.5, p3d.z * 5.5, 5, 0.50);
-        const microDetail      = perlin.fBm(p3d.x * 14,  p3d.y * 14,  p3d.z * 14,  4, 0.48);
-
-        // Base land threshold  — vary by latitude to create more realistic continent shapes
-        const latBias = 0.04 * Math.cos(lat * 2.8);
-        const landVal = continentNoise * 0.55 + coastlineDetail * 0.30 + microDetail * 0.15 + latBias;
-        const isLand  = landVal > 0.505;
-
-        // ---- Elevation tint (lighter = higher) ----
-        const elevation = Math.max(0, landVal - 0.505) / 0.495;
-
-        // ---- Polar ice caps ----
-        const iceStart = 1.15;           // ~66° latitude
-        const iceFull  = 1.35;           // ~77° latitude (fully white)
-        const iceBlend = Math.min(1, Math.max(0, (absLat - iceStart) / (iceFull - iceStart)));
-        const iceNoise = perlin.fBm(p3d.x * 8, p3d.y * 8, p3d.z * 8, 4, 0.5);
-        const iceMask  = Math.min(1, iceBlend * 1.4 + iceNoise * 0.25 - 0.15);
-
-        let r, g, b;
-
-        if (!isLand) {
-          // ---- OCEAN ----
-          // Deep ocean: dark navy-blue, shallower near coasts
-          const shallowMask = Math.max(0, (landVal - 0.44) / 0.065); // continental shelf
-          const depthNoise  = perlin.fBm(p3d.x * 9, p3d.y * 9, p3d.z * 9, 3, 0.5);
-
-          // Base deep ocean
-          r = 8  + shallowMask * 45 + depthNoise * 12;
-          g = 42 + shallowMask * 60 + depthNoise * 20;
-          b = 110 + shallowMask * 65 + depthNoise * 25;
-
-          // Tropical warm tint (equatorial blue-green, like Caribbean)
-          const tropicBlend = Math.max(0, 1 - absLat / 0.55) * 0.35;
-          r += tropicBlend * 15;
-          g += tropicBlend * 40;
-          b += tropicBlend * 5;
-
-        } else {
-          // ---- LAND ----
-          // Determine biome from latitude and noise
-          const desertNoise = perlin.fBm(p3d.x * 5, p3d.y * 5, p3d.z * 5 + 33, 4, 0.5);
-          const moistureNoise = perlin.fBm(p3d.x * 4.5, p3d.y * 4.5, p3d.z * 4.5 + 77, 5, 0.52);
-
-          // Sahara / Arabian / Australian desert zone (20-35° lat, arid side)
-          const isDesertZone = (absLat > 0.25 && absLat < 0.62) && desertNoise > 0.54;
-          // Tropical forest zone (0-15° lat, moist)
-          const isTropical   = absLat < 0.27 && moistureNoise > 0.46;
-          // Temperate green
-          const isTemperate  = absLat >= 0.27 && absLat < 0.85;
-          // Tundra / boreal (55-66° lat)
-          const isTundra     = absLat >= 0.85 && absLat < 1.15;
-
-          if (isDesertZone) {
-            // Sandy yellow-tan
-            r = 200 + elevation * 40;
-            g = 170 + elevation * 30;
-            b = 100 + elevation * 20;
-          } else if (isTropical) {
-            // Deep tropical green with variation
-            r = 30  + elevation * 40 + desertNoise * 20;
-            g = 110 + elevation * 50 + moistureNoise * 30;
-            b = 25  + elevation * 20;
-          } else if (isTundra) {
-            // Brownish-green tundra
-            r = 100 + elevation * 60;
-            g = 120 + elevation * 55;
-            b = 75  + elevation * 40;
-          } else {
-            // Temperate green/brown mix
-            r = 50  + elevation * 80  + desertNoise * 30;
-            g = 110 + elevation * 70  + moistureNoise * 25;
-            b = 35  + elevation * 30;
-          }
-
-          // Mountain snow highlights at high elevation
-          if (elevation > 0.65) {
-            const snowBlend = (elevation - 0.65) / 0.35;
-            r = Math.round(r + snowBlend * (240 - r));
-            g = Math.round(g + snowBlend * (248 - g));
-            b = Math.round(b + snowBlend * (255 - b));
-          }
-        }
-
-        // ---- Apply ice caps over everything ----
-        if (iceMask > 0) {
-          const iceR = 235, iceG = 245, iceB = 255;
-          r = Math.round(r + iceMask * (iceR - r));
-          g = Math.round(g + iceMask * (iceG - g));
-          b = Math.round(b + iceMask * (iceB - b));
-        }
-
-        const idx = (y * W + x) * 4;
-        d[idx]     = Math.min(255, Math.max(0, Math.round(r)));
-        d[idx + 1] = Math.min(255, Math.max(0, Math.round(g)));
-        d[idx + 2] = Math.min(255, Math.max(0, Math.round(b)));
-        d[idx + 3] = 255;
-      }
-    }
-
-    ctx.putImageData(imgData, 0, 0);
-    const tex = new THREE.CanvasTexture(canvas);
+    const loader = new THREE.TextureLoader();
+    const tex = loader.load('/assets/textures/earth.jpg');
     tex.anisotropy = 16;
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
     return tex;
   }
 
@@ -565,6 +450,7 @@ export class TextureGenerator {
       case 'mercury': return this.generateMercuryTexture();
       case 'venus': return this.generateVenusTexture();
       case 'earth': return this.generateEarthTexture();
+      case 'earthDay': return this.generateEarthTexture();
       case 'earthNight': return this.generateEarthNightTexture();
       case 'earthClouds': return this.generateEarthCloudTexture();
       case 'mars': return this.generateMarsTexture();

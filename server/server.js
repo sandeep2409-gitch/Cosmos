@@ -16,7 +16,7 @@ const app = express();
 
 // 1. Configure Middleware
 app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '50kb' }));  // Hard cap body size for security
+app.use(express.json({ limit: '50kb' })); // Hard cap body size for security
 app.use(requestLogger);
 
 // 2. Register API v1 Versioned Routes
@@ -29,11 +29,6 @@ app.use('/api/v1', aiRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-
-// 3. Fallback Route & Error Handling Middleware
-app.use(notFoundHandler);
-app.use(errorHandler);
-
 // 4. Start Server on Configurable Port
 const server = app.listen(ENV.PORT, () => {
   console.log(`================================================`);
@@ -41,6 +36,7 @@ const server = app.listen(ENV.PORT, () => {
   console.log(`📡 Health Check: http://localhost:${ENV.PORT}/api/v1/health`);
   console.log(`🌌 Objects API:  http://localhost:${ENV.PORT}/api/v1/objects`);
   console.log(`📚 Wikipedia:    http://localhost:${ENV.PORT}/api/v1/wikipedia/earth`);
+  console.log(`🤖 AI Explain:   http://localhost:${ENV.PORT}/api/v1/ai/explain`);
   console.log(`================================================`);
 });
 

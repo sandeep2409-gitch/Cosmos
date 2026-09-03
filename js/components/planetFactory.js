@@ -2,9 +2,10 @@ import * as THREE from 'three';
 import { PLANETS_DATA } from '../config/planetsData.js';
 import { TextureGenerator } from './textureGen.js';
 import { Shaders } from './shaders.js';
+import { SatelliteFactory } from './satelliteFactory.js';
 
 /**
- * Factory and Controller for 3D High-Poly Planets, Real AU Scaling & Display Toggles
+ * Factory and Controller for 3D Planets & Satellite Moon Systems
  */
 export class PlanetFactory {
   constructor(scene) {
@@ -13,6 +14,8 @@ export class PlanetFactory {
     this.scaleMode = 'visual'; // 'visual' vs 'real'
     this.orbitsVisible = true;
     this.labelsVisible = true;
+
+    this.satelliteFactory = new SatelliteFactory(scene);
 
     this.init();
   }
@@ -192,6 +195,9 @@ export class PlanetFactory {
     const labelSprite = this.createPlanetLabelSprite(config.name, config.radius);
     planetContainer.add(labelSprite);
 
+    // Create & Attach Natural Satellites (Moons)
+    const moons = this.satelliteFactory.createSatellitesForPlanet(config, planetContainer);
+
     pivot.add(planetContainer);
     this.scene.add(pivot);
 
@@ -206,6 +212,7 @@ export class PlanetFactory {
       cloudMesh,
       labelSprite,
       orbitLine,
+      moons,
       currentDistance: config.distance,
       targetDistance: config.distance,
       currentRadius: config.radius,
@@ -262,6 +269,7 @@ export class PlanetFactory {
     this.planets.forEach(p => {
       if (p.orbitLine) p.orbitLine.visible = visible;
     });
+    this.satelliteFactory.setMoonOrbitPathsVisible(visible);
   }
 
   setPlanetLabelsVisible(visible) {
@@ -269,6 +277,7 @@ export class PlanetFactory {
     this.planets.forEach(p => {
       if (p.labelSprite) p.labelSprite.visible = visible;
     });
+    this.satelliteFactory.setMoonLabelsVisible(visible);
   }
 
   update(delta, timeSpeed = 1.0) {
@@ -301,5 +310,8 @@ export class PlanetFactory {
         p.cloudMesh.rotation.y += p.config.rotationSpeed * 1.25 * timeFactor;
       }
     });
+
+    // Update Satellite Moons
+    this.satelliteFactory.update(delta, timeSpeed);
   }
 }

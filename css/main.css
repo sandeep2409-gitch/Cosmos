@@ -289,13 +289,39 @@ html, body {
   text-transform: uppercase;
 }
 
-.logo-tagline {
+/* Hierarchical Breadcrumb HUD Indicator */
+.nav-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.72rem;
-  color: var(--text-muted);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  font-weight: 500;
+  font-family: var(--font-heading);
   margin-left: 24px;
+  font-weight: 500;
+}
+
+.bc-item {
+  color: var(--text-muted);
+}
+
+.bc-item.active {
+  color: var(--accent-cyan);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.bc-link {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.bc-link:hover {
+  color: #ffffff;
+}
+
+.bc-sep {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 0.65rem;
 }
 
 .header-center {
@@ -629,7 +655,7 @@ kbd {
   font-weight: 500;
 }
 
-/* 7. Redesigned Modular Tabbed Information Panel */
+/* 7. Redesigned Modular Tabbed Information Panel (Segment 4 Extensions) */
 .info-panel-container {
   position: absolute;
   top: 80px;
@@ -796,6 +822,91 @@ kbd {
   color: #f3f4f6;
 }
 
+/* Moon Badges & Lists (Segment 4) */
+.moon-badges-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.moon-badge {
+  font-family: var(--font-heading);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  border-radius: 9999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.moon-badge:hover {
+  background: rgba(56, 189, 248, 0.35);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+  transform: translateY(-1px);
+}
+
+.moon-list-detailed {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.moon-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.moon-card:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: rgba(56, 189, 248, 0.4);
+}
+
+.mc-icon { font-size: 1.2rem; }
+.mc-info { display: flex; flex-direction: column; flex: 1; }
+.mc-name { font-family: var(--font-heading); font-size: 0.85rem; font-weight: 600; color: #ffffff; }
+.mc-sub { font-size: 0.7rem; color: var(--text-muted); }
+.mc-arrow { color: var(--accent-cyan); font-size: 1.0rem; }
+
+.parent-planet-card {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pp-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; color: var(--accent-cyan); }
+.pp-name { font-family: var(--font-heading); font-size: 1.2rem; font-weight: 700; color: #ffffff; }
+.pp-type { font-size: 0.72rem; color: var(--text-muted); }
+.pp-desc { font-size: 0.8rem; color: #d1d5db; line-height: 1.4; margin-top: 4px; }
+
+.btn-parent {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(56, 189, 248, 0.4));
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #ffffff;
+}
+
+.btn-parent:hover {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.7), rgba(56, 189, 248, 0.7));
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
+}
+
 .science-table {
   display: flex;
   flex-direction: column;
@@ -812,16 +923,8 @@ kbd {
   font-size: 0.8rem;
 }
 
-.sc-label {
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.sc-val {
-  color: #ffffff;
-  font-family: var(--font-heading);
-  font-weight: 600;
-}
+.sc-label { color: var(--text-muted); font-weight: 500; }
+.sc-val { color: #ffffff; font-family: var(--font-heading); font-weight: 600; }
 
 .panel-placeholder {
   display: flex;

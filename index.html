@@ -43,7 +43,7 @@
       <div class="hero-badge">NASA SCIENTIFIC INTERFACE</div>
       <h1 class="hero-title">COSMOS</h1>
       <p class="hero-headline">EXPLORE THE SOLAR SYSTEM</p>
-      <p class="hero-description">An interactive cinematic journey through the worlds that orbit our Sun.</p>
+      <p class="hero-description">An interactive cinematic journey through the worlds and major moons that orbit our Sun.</p>
 
       <div class="hero-actions">
         <button id="hero-start-btn" class="btn-hero-primary">🚀 START EXPLORING</button>
@@ -59,7 +59,10 @@
         <div class="logo-icon"></div>
         <h1 class="logo-text">COSMOS</h1>
       </div>
-      <div class="logo-tagline">Interactive Solar System</div>
+      <!-- Hierarchical Breadcrumb Location Indicator -->
+      <div id="nav-breadcrumb" class="nav-breadcrumb">
+        <span class="bc-item active">SOLAR SYSTEM</span>
+      </div>
     </div>
 
     <div class="header-center">
@@ -84,7 +87,7 @@
     <div class="control-badge"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</div>
     <div class="control-badge"><kbd>Space</kbd>/<kbd>Shift</kbd> Elevate</div>
     <div class="control-badge"><kbd>R</kbd> Reset</div>
-    <div class="control-badge"><span class="mouse-icon">🖱️</span> Drag to Orbit / Click Object</div>
+    <div class="control-badge"><span class="mouse-icon">🖱️</span> Drag to Orbit / Click Planet or Moon</div>
   </div>
 
   <!-- 6. Simulation Control Bar (Bottom HUD) -->
@@ -115,7 +118,7 @@
         <label class="switch-label">
           <input type="checkbox" id="toggle-planet-labels" checked>
           <span class="switch-slider"></span>
-          <span class="switch-text">Planet Labels</span>
+          <span class="switch-text">Labels</span>
         </label>
       </div>
     </div>
@@ -135,7 +138,7 @@
       </div>
       <div class="modal-body">
         <p><b>COSMOS</b> is an advanced 3D solar system exploration web platform built using Three.js, Vanilla ES Modules, custom GLSL shaders, and WebGL physics.</p>
-        <p>Experience photorealistic planetary atmospheres, solar plasma dynamics, 4K surface textures, real-time PCF soft shadows, and accurate Astronomical Unit (AU) orbital physics.</p>
+        <p>Experience photorealistic planetary atmospheres, solar plasma dynamics, 16 natural satellites (moons), real-time PCF soft shadows, and accurate Astronomical Unit (AU) orbital physics.</p>
       </div>
     </div>
   </div>
@@ -155,7 +158,7 @@
               <li><b>Left Drag:</b> Orbit camera around target</li>
               <li><b>Right Drag:</b> Pan camera position</li>
               <li><b>Scroll Wheel:</b> Zoom in / out</li>
-              <li><b>Click Object:</b> Select celestial body & focus</li>
+              <li><b>Click Planet / Moon:</b> Select celestial body & focus</li>
               <li><b>Click Empty Space:</b> Deselect object</li>
             </ul>
           </div>

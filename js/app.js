@@ -15,13 +15,13 @@ import { HelpModal } from './ui/helpModal.js';
 import { InfoPanel } from './ui/infoPanel.js';
 
 /**
- * Main Application Core — Segment 3 Premium UI/UX & Visual Polish
+ * Main Application Core — Segment 4 Satellite & Moon System
  */
 class Application {
   constructor() {
     this.container = document.getElementById('canvas-container');
     this.clock = new THREE.Clock();
-    this.timeMultiplier = 1.0; // Global orbital simulation speed
+    this.timeMultiplier = 1.0;
     
     this.init();
   }
@@ -34,7 +34,7 @@ class Application {
     this.starfield = new Starfield(this.sceneManager.scene, 3500);
     this.sun = new Sun(this.sceneManager.scene);
 
-    // 3. Planets & Orbital Paths
+    // 3. Planets, Orbit Paths & Satellite Moons
     this.planetFactory = new PlanetFactory(this.sceneManager.scene);
 
     // 4. Camera Controls & Camera Animator
@@ -47,7 +47,7 @@ class Application {
       this.controlsManager
     );
 
-    // 5. Interaction Manager & Raycasting Setup
+    // 5. Interaction Manager & Unified Raycasting Setup
     this.interactionManager = new InteractionManager(
       this.sceneManager.scene,
       this.sceneManager.camera,
@@ -62,7 +62,12 @@ class Application {
       this.interactionManager.registerTarget(p.planetMesh, p.config);
     });
 
-    // 6. Segment 3 UI Modules
+    // Register 16 Satellite Moons as interactive targets
+    this.planetFactory.satelliteFactory.satellites.forEach(s => {
+      this.interactionManager.registerTarget(s.moonMesh, s.config);
+    });
+
+    // 6. UI Modules
     this.uiOverlay = new UIOverlay();
     this.infoPanel = new InfoPanel();
     this.helpModal = new HelpModal();
@@ -74,7 +79,14 @@ class Application {
     );
 
     this.topNav = new TopNav(
-      (id) => { this.interactionManager.selectObjectById(id); },
+      (id) => {
+        if (id) {
+          this.interactionManager.selectObjectById(id);
+        } else {
+          this.interactionManager.deselect();
+          this.cameraAnimator.resetToOverview();
+        }
+      },
       () => { this.helpModal.toggle(); }
     );
 
@@ -87,7 +99,7 @@ class Application {
       this.heroIntro.show();
     });
 
-    // 7. Connect Callbacks
+    // 7. Connect Callbacks & Hierarchical Navigation
     this.setupCallbacks();
 
     // 8. Start Main Animation Loop
@@ -104,10 +116,12 @@ class Application {
       this.cameraAnimator.resetToOverview();
     };
 
-    // On Celestial Object Selected
+    // On Celestial Object Selected (Planet or Moon)
     this.interactionManager.onSelectCallback = (data, mesh) => {
       this.infoPanel.show(data);
+      this.topNav.updateBreadcrumb(data);
       this.uiOverlay.setFocusButtonVisible(true);
+
       const radius = mesh.userData.radius || data.radius || 3.0;
       this.cameraAnimator.focusOnObject(mesh, radius);
     };
@@ -115,7 +129,18 @@ class Application {
     // On Object Deselected / Clicked Empty Space
     this.interactionManager.onDeselectCallback = () => {
       this.infoPanel.hide();
+      this.topNav.updateBreadcrumb(null);
       this.uiOverlay.setFocusButtonVisible(false);
+    };
+
+    // InfoPanel Moon Badge Clicked (e.g. [ Europa ])
+    this.infoPanel.onSelectMoonCallback = (moonId) => {
+      this.interactionManager.selectObjectById(moonId);
+    };
+
+    // InfoPanel Back To Parent Planet Clicked (e.g. ← BACK TO JUPITER)
+    this.infoPanel.onSelectParentPlanetCallback = (planetId) => {
+      this.interactionManager.selectObjectById(planetId);
     };
 
     // InfoPanel Close Button Clicked
@@ -138,12 +163,13 @@ class Application {
     const handleReset = () => {
       this.interactionManager.deselect();
       this.infoPanel.hide();
+      this.topNav.updateBreadcrumb(null);
       this.cameraAnimator.resetToOverview();
     };
     this.infoPanel.onResetCallback = handleReset;
     this.uiOverlay.onResetCallback = handleReset;
 
-    // Global Keyboard Shortcuts (R key to reset, ESC key to close panels)
+    // Global Keyboard Shortcuts (R key reset, ESC key close)
     this.controlsManager.onResetShortcut = handleReset;
     this.controlsManager.onEscapeShortcut = () => {
       this.interactionManager.deselect();
@@ -151,7 +177,6 @@ class Application {
       this.helpModal.hide();
     };
     this.controlsManager.onSpaceShortcut = () => {
-      // Toggle Pause / Play simulation speed on Spacebar if no movement active
       if (this.timeMultiplier > 0) {
         this.simControls.setSpeed(0);
       } else {
@@ -168,7 +193,7 @@ class Application {
     // Update Sun Shaders & Scale Lerp
     this.sun.update(delta);
 
-    // Update Planet Orbital Motion with Time Speed Multiplier
+    // Update Planet & Moon Orbital Motion with Time Speed Multiplier
     this.planetFactory.update(delta, this.timeMultiplier);
 
     // Update Hover & Selection Ring Animations

@@ -1,7 +1,8 @@
 import { PLANETS_DATA, SUN_CONFIG } from '../config/planetsData.js';
+import { SATELLITES_DATA } from '../config/satellitesData.js';
 
 /**
- * Top Navigation Bar & Objects Drawer Component
+ * Top Navigation Bar, Objects Drawer & Hierarchical Breadcrumb Component
  */
 export class TopNav {
   constructor(onSelectObject, onOpenHelp) {
@@ -11,6 +12,7 @@ export class TopNav {
     this.objectsMenu = document.getElementById('nav-objects-dropdown');
     this.objectsToggleBtn = document.getElementById('nav-btn-objects');
     this.aboutModal = document.getElementById('modal-about');
+    this.breadcrumbContainer = document.getElementById('nav-breadcrumb');
 
     this.init();
   }
@@ -70,6 +72,52 @@ export class TopNav {
     if (helpBtn) {
       helpBtn.addEventListener('click', () => {
         if (this.onOpenHelp) this.onOpenHelp();
+      });
+    }
+  }
+
+  updateBreadcrumb(data) {
+    if (!this.breadcrumbContainer) return;
+
+    if (!data) {
+      this.breadcrumbContainer.innerHTML = `
+        <span class="bc-item active">SOLAR SYSTEM</span>
+      `;
+      return;
+    }
+
+    if (data.type === 'satellite') {
+      const parentPlanet = PLANETS_DATA.find(p => p.id === data.parentPlanetId);
+      const parentName = parentPlanet ? parentPlanet.name.toUpperCase() : data.parentPlanetId.toUpperCase();
+
+      this.breadcrumbContainer.innerHTML = `
+        <span class="bc-item bc-link" id="bc-solar">SOLAR SYSTEM</span>
+        <span class="bc-sep">/</span>
+        <span class="bc-item bc-link" id="bc-parent">${parentName}</span>
+        <span class="bc-sep">/</span>
+        <span class="bc-item active">${data.name.toUpperCase()}</span>
+      `;
+
+      const bcSolar = document.getElementById('bc-solar');
+      if (bcSolar) bcSolar.addEventListener('click', () => {
+        if (this.onSelectObject) this.onSelectObject(null);
+      });
+
+      const bcParent = document.getElementById('bc-parent');
+      if (bcParent) bcParent.addEventListener('click', () => {
+        if (this.onSelectObject) this.onSelectObject(data.parentPlanetId);
+      });
+
+    } else {
+      this.breadcrumbContainer.innerHTML = `
+        <span class="bc-item bc-link" id="bc-solar">SOLAR SYSTEM</span>
+        <span class="bc-sep">/</span>
+        <span class="bc-item active">${data.name.toUpperCase()}</span>
+      `;
+
+      const bcSolar = document.getElementById('bc-solar');
+      if (bcSolar) bcSolar.addEventListener('click', () => {
+        if (this.onSelectObject) this.onSelectObject(null);
       });
     }
   }

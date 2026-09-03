@@ -4,7 +4,7 @@ import { ARTIFICIAL_SATELLITES_DATA } from '../config/artificialSatellitesData.j
 
 /**
  * Frontend COSMOS API Service Client
- * Fetches object metadata from Express backend (/api/v1/objects/:id) with automatic local fallback.
+ * Fetches object metadata & Wikipedia summaries from Express backend with automatic local fallback.
  */
 export class CosmosApi {
   static baseUrl = 'http://localhost:5000/api/v1';
@@ -31,5 +31,20 @@ export class CosmosApi {
     ];
 
     return all.find(o => o.id.toLowerCase() === id.toLowerCase()) || null;
+  }
+
+  static async getWikipediaData(id) {
+    try {
+      const response = await fetch(`${this.baseUrl}/wikipedia/${id}`);
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success && json.wikipedia) {
+          return json.wikipedia;
+        }
+      }
+    } catch (err) {
+      console.warn(`[COSMOS API] Wikipedia backend endpoint unreachable for '${id}'.`);
+    }
+    return null;
   }
 }

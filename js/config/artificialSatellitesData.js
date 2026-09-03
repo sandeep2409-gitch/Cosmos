@@ -1,6 +1,5 @@
 /**
- * Centralized Artificial Satellites & Spacecraft Dataset for COSMOS (Segment 4)
- * Curated collection of Space Age Pioneers, ISRO Missions, Space Telescopes, Deep Space Probes & Constellations.
+ * Centralized Artificial Satellites & Spacecraft Dataset for COSMOS
  */
 
 export const ARTIFICIAL_SATELLITES_DATA = [
@@ -8,6 +7,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'sputnik-1',
     name: 'Sputnik 1',
+    wikipediaTitle: 'Sputnik 1',
     category: 'artificial',
     layer: 'pioneers',
     parentBodyId: 'earth',
@@ -29,6 +29,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'sputnik-2',
     name: 'Sputnik 2',
+    wikipediaTitle: 'Sputnik 2',
     category: 'artificial',
     layer: 'pioneers',
     parentBodyId: 'earth',
@@ -50,6 +51,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'explorer-1',
     name: 'Explorer 1',
+    wikipediaTitle: 'Explorer 1',
     category: 'artificial',
     layer: 'pioneers',
     parentBodyId: 'earth',
@@ -71,6 +73,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'vanguard-1',
     name: 'Vanguard 1',
+    wikipediaTitle: 'Vanguard 1',
     category: 'artificial',
     layer: 'pioneers',
     parentBodyId: 'earth',
@@ -92,6 +95,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'tiros-1',
     name: 'TIROS-1',
+    wikipediaTitle: 'TIROS-1',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -113,6 +117,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'telstar-1',
     name: 'Telstar 1',
+    wikipediaTitle: 'Telstar',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -136,6 +141,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'aryabhata',
     name: 'Aryabhata',
+    wikipediaTitle: 'Aryabhata (satellite)',
     category: 'artificial',
     layer: 'pioneers',
     parentBodyId: 'earth',
@@ -157,6 +163,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'bhaskara-1',
     name: 'Bhaskara-I',
+    wikipediaTitle: 'Bhaskara (satellite)',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -178,6 +185,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'rohini-rs1',
     name: 'Rohini RS-1',
+    wikipediaTitle: 'Rohini (satellite)',
     category: 'artificial',
     layer: 'pioneers',
     parentBodyId: 'earth',
@@ -199,6 +207,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'apple',
     name: 'APPLE',
+    wikipediaTitle: 'Ariane Passenger Payload Experiment',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -211,7 +220,6 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     orbitalDistance: 24.0,
     orbitSpeed: 0.35,
     rotationSpeed: 0.005,
-    axialTilt: 0.0,
     diameter: '1.2 m cylindrical bus',
     orbitalPeriod: '24 hours',
     status: 'Completed Mission',
@@ -221,6 +229,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'insat-1b',
     name: 'INSAT-1B',
+    wikipediaTitle: 'Indian National Satellite System',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -242,6 +251,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'irs-1a',
     name: 'IRS-1A',
+    wikipediaTitle: 'Indian Remote Sensing',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -263,6 +273,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'chandrayaan-1',
     name: 'Chandrayaan-1',
+    wikipediaTitle: 'Chandrayaan-1',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'moon',
@@ -284,6 +295,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'mangalyaan',
     name: 'Mangalyaan (MOM)',
+    wikipediaTitle: 'Mars Orbiter Mission',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'mars',
@@ -305,6 +317,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'astrosat',
     name: 'AstroSat',
+    wikipediaTitle: 'Astrosat',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -326,6 +339,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'cartosat-3',
     name: 'Cartosat-3',
+    wikipediaTitle: 'Cartosat-3',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -347,6 +361,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'chandrayaan-3',
     name: 'Chandrayaan-3 Propulsion',
+    wikipediaTitle: 'Chandrayaan-3',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'moon',
@@ -368,6 +383,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'aditya-l1',
     name: 'Aditya-L1',
+    wikipediaTitle: 'Aditya-L1',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'sun',
@@ -389,6 +405,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'nisar',
     name: 'NISAR',
+    wikipediaTitle: 'NISAR (satellite)',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -412,6 +429,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'hubble',
     name: 'Hubble Space Telescope',
+    wikipediaTitle: 'Hubble Space Telescope',
     category: 'artificial',
     layer: 'earth-sats',
     parentBodyId: 'earth',
@@ -433,6 +451,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'james-webb',
     name: 'James Webb Space Telescope (JWST)',
+    wikipediaTitle: 'James Webb Space Telescope',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'sun',
@@ -454,6 +473,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'kepler',
     name: 'Kepler Space Telescope',
+    wikipediaTitle: 'Kepler space telescope',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'sun',
@@ -475,6 +495,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'spitzer',
     name: 'Spitzer Space Telescope',
+    wikipediaTitle: 'Spitzer Space Telescope',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'sun',
@@ -498,6 +519,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'starlink',
     name: 'Starlink Constellation Representative',
+    wikipediaTitle: 'Starlink',
     category: 'artificial',
     layer: 'constellations',
     parentBodyId: 'earth',
@@ -519,6 +541,7 @@ export const ARTIFICIAL_SATELLITES_DATA = [
   {
     id: 'dart',
     name: 'DART Spacecraft',
+    wikipediaTitle: 'Double Asteroid Redirection Test',
     category: 'artificial',
     layer: 'deep-space',
     parentBodyId: 'sun',

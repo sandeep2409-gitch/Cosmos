@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 /**
  * Raycasting & Selection Manager for Planets, Sun, Moons & Spacecraft
- * Features Crisp Thin Targeting Bracket Rings & Proportional Scaling.
+ * Handles object selection and camera focus triggering (Highlighting rings removed).
  */
 export class InteractionManager {
   constructor(scene, camera, domElement) {
@@ -22,35 +22,6 @@ export class InteractionManager {
     this.onDeselectCallback = null;
 
     this.init();
-    this.initVisualHighlights();
-  }
-
-  initVisualHighlights() {
-    // 1. Hover Highlight Ring (Thin Crisp Cyan Ring)
-    const hoverGeo = new THREE.RingGeometry(1.02, 1.07, 64);
-    const hoverMat = new THREE.MeshBasicMaterial({
-      color: 0x38bdf8,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.8,
-      depthTest: false
-    });
-    this.hoverRing = new THREE.Mesh(hoverGeo, hoverMat);
-    this.hoverRing.visible = false;
-    this.scene.add(this.hoverRing);
-
-    // 2. Selection Ring (Thin Crisp Gold/Cyan Double Ring)
-    const selectGeo = new THREE.RingGeometry(1.03, 1.09, 64);
-    const selectMat = new THREE.MeshBasicMaterial({
-      color: 0xfbbf24,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.9,
-      depthTest: false
-    });
-    this.selectRing = new THREE.Mesh(selectGeo, selectMat);
-    this.selectRing.visible = false;
-    this.scene.add(this.selectRing);
   }
 
   registerTarget(mesh, data) {
@@ -78,13 +49,11 @@ export class InteractionManager {
       if (this.hoveredMesh !== hitMesh) {
         this.hoveredMesh = hitMesh;
         this.domElement.style.cursor = 'pointer';
-        this.updateHoverRing(this.hoveredMesh);
       }
     } else {
       if (this.hoveredMesh) {
         this.hoveredMesh = null;
         this.domElement.style.cursor = 'default';
-        this.hoverRing.visible = false;
       }
     }
   }
@@ -120,8 +89,6 @@ export class InteractionManager {
     this.selectedMesh = mesh;
     this.selectedData = data;
 
-    this.updateSelectRing(mesh);
-
     if (this.onSelectCallback) {
       this.onSelectCallback(data, mesh);
     }
@@ -130,60 +97,13 @@ export class InteractionManager {
   deselect() {
     this.selectedMesh = null;
     this.selectedData = null;
-    this.selectRing.visible = false;
 
     if (this.onDeselectCallback) {
       this.onDeselectCallback();
     }
   }
 
-  updateHoverRing(mesh) {
-    if (!mesh) return;
-    const worldPos = new THREE.Vector3();
-    mesh.getWorldPosition(worldPos);
-
-    const radius = mesh.userData.radius || 2.0;
-    // Tight fit: 1.08x radius for planets, 1.15x for small spacecraft
-    const scaleFactor = radius > 1.5 ? radius * 1.08 : radius * 1.15;
-    this.hoverRing.scale.setScalar(scaleFactor);
-    this.hoverRing.position.copy(worldPos);
-    this.hoverRing.lookAt(this.camera.position);
-    this.hoverRing.visible = true;
-  }
-
-  updateSelectRing(mesh) {
-    if (!mesh) return;
-    const worldPos = new THREE.Vector3();
-    mesh.getWorldPosition(worldPos);
-
-    const radius = mesh.userData.radius || 2.0;
-    const scaleFactor = radius > 1.5 ? radius * 1.12 : radius * 1.2;
-    this.selectRing.scale.setScalar(scaleFactor);
-    this.selectRing.position.copy(worldPos);
-    this.selectRing.lookAt(this.camera.position);
-    this.selectRing.visible = true;
-  }
-
   update(delta) {
-    // Keep hover ring facing camera & locked to object
-    if (this.hoverRing.visible && this.hoveredMesh) {
-      const worldPos = new THREE.Vector3();
-      this.hoveredMesh.getWorldPosition(worldPos);
-      this.hoverRing.position.copy(worldPos);
-      this.hoverRing.lookAt(this.camera.position);
-    }
-
-    // Keep select ring facing camera & locked to object with subtle micro pulse
-    if (this.selectRing.visible && this.selectedMesh) {
-      const worldPos = new THREE.Vector3();
-      this.selectedMesh.getWorldPosition(worldPos);
-      this.selectRing.position.copy(worldPos);
-      this.selectRing.lookAt(this.camera.position);
-
-      const pulse = 1.0 + Math.sin(Date.now() * 0.004) * 0.02;
-      const radius = this.selectedMesh.userData.radius || 2.0;
-      const baseScale = radius > 1.5 ? radius * 1.12 : radius * 1.2;
-      this.selectRing.scale.setScalar(baseScale * pulse);
-    }
+    // Highlighting rings completely removed
   }
 }

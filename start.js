@@ -22,13 +22,13 @@ const server = fileServer.createServer({
   cache: -1
 });
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.log(`\x1b[33mℹ Frontend server already running on port 8080: \x1b[1mhttp://localhost:8080\x1b[0m`);
-  } else {
-    console.error('Server error:', err);
-  }
-});
+if (server.server) {
+  server.server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.log(`\x1b[33mℹ Frontend 3D server running on port 8080: \x1b[1mhttp://localhost:8080\x1b[0m`);
+    }
+  });
+}
 
 try {
   server.listen(8080, () => {
@@ -38,7 +38,7 @@ try {
     console.log(`Press Ctrl+C to stop all servers.`);
   });
 } catch (e) {
-  // Ignored if port in use
+  // Ignored
 }
 
 const cleanup = () => {

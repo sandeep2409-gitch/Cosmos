@@ -1,14 +1,16 @@
 import { PLANETS_DATA } from '../config/planetsData.js';
 import { SATELLITES_DATA } from '../config/satellitesData.js';
-import { ARTIFICIAL_SATELLITES_DATA } from '../config/artificialSatellitesData.js';
+import { CosmosApi } from '../services/cosmosApi.js';
 
 /**
- * Redesigned Modular Tabbed Information Panel (Segment 4 — Artificial Satellites Integration)
+ * Redesigned Modular Tabbed Information Panel (Segment 6 — Wikipedia Integration)
  */
 export class InfoPanel {
   constructor() {
     this.container = null;
     this.currentData = null;
+    this.wikiData = null;
+    this.wikiLoading = false;
     this.activeTab = 'overview';
 
     this.onCloseCallback = null;
@@ -29,11 +31,26 @@ export class InfoPanel {
   show(data) {
     if (!data) return;
     this.currentData = data;
+    this.wikiData = null;
+    this.wikiLoading = true;
     this.activeTab = 'overview';
     this.render();
 
     this.container.classList.remove('hidden');
     this.container.classList.add('visible');
+
+    // Asynchronously fetch Wikipedia summary in background
+    this.fetchWikipedia(data.id);
+  }
+
+  async fetchWikipedia(id) {
+    const wiki = await CosmosApi.getWikipediaData(id);
+    this.wikiData = wiki;
+    this.wikiLoading = false;
+    // Re-render tab content if still showing this object
+    if (this.currentData && this.currentData.id === id) {
+      this.render();
+    }
   }
 
   hide() {
@@ -63,11 +80,11 @@ export class InfoPanel {
 
       <div class="panel-tabs-header">
         <button class="tab-btn ${this.activeTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
+        <button class="tab-btn ${this.activeTab === 'wiki' ? 'active' : ''}" data-tab="wiki">📚 Wikipedia</button>
         <button class="tab-btn ${this.activeTab === 'science' ? 'active' : ''}" data-tab="science">${isArtificial ? 'Mission & History' : 'Scientific Data'}</button>
         <button class="tab-btn ${this.activeTab === 'satellites' ? 'active' : ''}" data-tab="satellites">
           ${isArtificial || isMoon ? 'Parent Body' : 'Satellites'}
         </button>
-        <button class="tab-btn ${this.activeTab === 'ai' ? 'active' : ''}" data-tab="ai">AI Insights</button>
       </div>
 
       <div class="panel-tab-body">
@@ -186,6 +203,50 @@ export class InfoPanel {
       `;
     }
 
+    if (this.activeTab === 'wiki') {
+      if (this.wikiLoading) {
+        return `
+          <div class="panel-placeholder">
+            <span class="ph-icon">⏳</span>
+            <span class="ph-title">Loading Wikipedia Article...</span>
+            <span class="ph-text">Retrieving normalized summary from MediaWiki API.</span>
+          </div>
+        `;
+      }
+
+      if (!this.wikiData) {
+        return `
+          <div class="panel-placeholder">
+            <span class="ph-icon">📚</span>
+            <span class="ph-title">Wikipedia Information Unavailable</span>
+            <span class="ph-text">Showing COSMOS local scientific data.</span>
+          </div>
+          <p class="panel-description">${data.description}</p>
+        `;
+      }
+
+      const wiki = this.wikiData;
+      return `
+        ${wiki.image ? `
+          <div class="wiki-image-container">
+            <img src="${wiki.image}" alt="${wiki.title}" class="wiki-image" />
+          </div>
+        ` : ''}
+
+        <div class="wiki-article-body">
+          <span class="wiki-tag">WIKIPEDIA SUMMARY</span>
+          <p class="panel-description">${wiki.summary}</p>
+        </div>
+
+        <div class="wiki-attribution-bar">
+          <span class="wiki-source-label">Source: <b>Wikipedia</b></span>
+          <a href="${wiki.pageUrl}" target="_blank" rel="noopener noreferrer" class="btn-wiki-link">
+            View on Wikipedia &rarr;
+          </a>
+        </div>
+      `;
+    }
+
     if (this.activeTab === 'science') {
       if (isArtificial) {
         return `
@@ -269,16 +330,6 @@ export class InfoPanel {
           <span class="ph-icon">🛰️</span>
           <span class="ph-title">No Major Moons Configured</span>
           <span class="ph-text">This planet does not have major natural satellites in the current dataset.</span>
-        </div>
-      `;
-    }
-
-    if (this.activeTab === 'ai') {
-      return `
-        <div class="panel-placeholder">
-          <span class="ph-icon">🤖</span>
-          <span class="ph-title">Cosmic AI Insights</span>
-          <span class="ph-text">Real-time planetary analysis and generative astrophysics synthesis arriving in future updates.</span>
         </div>
       `;
     }

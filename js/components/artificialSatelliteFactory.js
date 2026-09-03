@@ -3,7 +3,7 @@ import { ARTIFICIAL_SATELLITES_DATA } from '../config/artificialSatellitesData.j
 
 /**
  * Factory & Controller for 3D Artificial Satellites & Spacecraft (Segment 4)
- * Generates procedural low-poly spacecraft templates and manages contextual planet focus visibility.
+ * Satellite names & spacecraft orbits appear ONLY when parent planet is focused.
  */
 export class ArtificialSatelliteFactory {
   constructor(scene) {
@@ -217,17 +217,17 @@ export class ArtificialSatelliteFactory {
 
     satContainer.add(modelMesh);
 
-    // Label Sprite
+    // Label Sprite (Initially hidden in overview mode)
     const labelSprite = this.createSpacecraftLabelSprite(config.name, config.launchYear, config.countryAgency);
-    labelSprite.visible = false; // Hidden until planet clicked
+    labelSprite.visible = false;
     satContainer.add(labelSprite);
 
     pivot.add(satContainer);
     parentContainer.add(pivot);
 
-    // Orbit Line
+    // Orbit Line (Initially hidden in overview mode)
     const orbitLine = this.createOrbitLine(config.orbitalDistance, config.color);
-    orbitLine.visible = false; // Hidden until planet clicked
+    orbitLine.visible = false;
     parentContainer.add(orbitLine);
 
     return {
@@ -266,7 +266,7 @@ export class ArtificialSatelliteFactory {
   setActiveParentId(parentId) {
     this.activeParentId = parentId;
     this.spacecraftList.forEach(s => {
-      const isParentActive = parentId && (s.config.parentBodyId === parentId);
+      const isParentActive = Boolean(parentId) && (s.config.parentBodyId === parentId);
       const isLayerVisible = this.layerVisibility[s.config.layer] !== false;
       
       s.labelSprite.visible = isParentActive && isLayerVisible && this.labelsVisible;

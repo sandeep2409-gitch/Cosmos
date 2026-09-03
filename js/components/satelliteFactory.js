@@ -4,6 +4,7 @@ import { TextureGenerator } from './textureGen.js';
 
 /**
  * Factory & Controller for 3D Natural Satellites (Moons)
+ * Satellite names & satellite orbits appear ONLY when parent planet is focused.
  */
 export class SatelliteFactory {
   constructor(scene) {
@@ -104,17 +105,17 @@ export class SatelliteFactory {
 
     satelliteContainer.add(moonMesh);
 
-    // Label Sprite
+    // Label Sprite (Initially hidden in overview mode)
     const labelSprite = this.createMoonLabelSprite(config.name);
-    labelSprite.visible = false; // Hidden until planet clicked
+    labelSprite.visible = false;
     satelliteContainer.add(labelSprite);
 
     pivot.add(satelliteContainer);
     planetContainer.add(pivot);
 
-    // Dotted Moon Orbit Line around Planet
+    // Dotted Moon Orbit Line (Initially hidden in overview mode)
     const orbitLine = this.createOrbitLine(config.orbitalDistance, config.color);
-    orbitLine.visible = false; // Hidden until planet clicked
+    orbitLine.visible = false;
     planetContainer.add(orbitLine);
 
     return {
@@ -153,7 +154,7 @@ export class SatelliteFactory {
   setActiveParentId(parentId) {
     this.activeParentId = parentId;
     this.satellites.forEach(s => {
-      const isParentActive = parentId && (s.config.parentPlanetId === parentId);
+      const isParentActive = Boolean(parentId) && (s.config.parentPlanetId === parentId);
       s.labelSprite.visible = isParentActive && this.labelsVisible;
       s.orbitLine.visible = isParentActive && this.orbitsVisible;
     });
@@ -173,12 +174,10 @@ export class SatelliteFactory {
     const timeFactor = delta * 60 * timeSpeed;
 
     this.satellites.forEach(s => {
-      // Moon orbital movement around planet
       s.orbitAngle += s.config.orbitSpeed * 0.01 * timeFactor;
       s.satelliteContainer.position.x = Math.cos(s.orbitAngle) * s.config.orbitalDistance;
       s.satelliteContainer.position.z = Math.sin(s.orbitAngle) * s.config.orbitalDistance;
 
-      // Self rotation
       s.moonMesh.rotation.y += s.config.rotationSpeed * timeFactor;
     });
   }

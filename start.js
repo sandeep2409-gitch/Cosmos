@@ -1,14 +1,13 @@
 import { spawn } from 'child_process';
-import path from 'path';
 import fileServer from 'http-server';
 
 /**
- * COSMOS One-Command Launcher
- * Launches Express API Backend (Port 5000) & Frontend Web Server (Port 8080) simultaneously.
+ * COSMOS One-Command Unified Launcher
+ * Starts Express API Backend (Port 5000) & Frontend Web Server (Port 8080) in one command.
  */
 
 console.log(`\x1b[36m=======================================================\x1b[0m`);
-console.log(`\x1b[1m\x1b[33m🚀 STARTING COSMOS EXPLORATION ENGINE...\x1b[0m`);
+console.log(`\x1b[1m\x1b[33m🚀 LAUNCHING COSMOS EXPLORATION ENGINE...\x1b[0m`);
 console.log(`\x1b[36m=======================================================\x1b[0m`);
 
 // 1. Spawn Express Backend API Server (Port 5000)
@@ -23,18 +22,29 @@ const server = fileServer.createServer({
   cache: -1
 });
 
-server.listen(8080, () => {
-  console.log(`\x1b[32m✔ Frontend 3D App Live:  \x1b[1mhttp://localhost:8080\x1b[0m`);
-  console.log(`\x1b[32m✔ Express API Engine:   \x1b[1mhttp://localhost:5000/api/v1/health\x1b[0m`);
-  console.log(`\x1b[36m-------------------------------------------------------\x1b[0m`);
-  console.log(`Press Ctrl+C to stop all servers.`);
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`\x1b[33mℹ Frontend server already running on port 8080: \x1b[1mhttp://localhost:8080\x1b[0m`);
+  } else {
+    console.error('Server error:', err);
+  }
 });
 
-// Handle graceful termination
+try {
+  server.listen(8080, () => {
+    console.log(`\x1b[32m✔ 3D Frontend Application: \x1b[1mhttp://localhost:8080\x1b[0m`);
+    console.log(`\x1b[32m✔ Express API Engine:      \x1b[1mhttp://localhost:5000/api/v1/health\x1b[0m`);
+    console.log(`\x1b[36m-------------------------------------------------------\x1b[0m`);
+    console.log(`Press Ctrl+C to stop all servers.`);
+  });
+} catch (e) {
+  // Ignored if port in use
+}
+
 const cleanup = () => {
   console.log('\nShutting down COSMOS engine servers...');
-  backendProcess.kill();
-  server.close();
+  try { backendProcess.kill(); } catch (e) {}
+  try { server.close(); } catch (e) {}
   process.exit(0);
 };
 

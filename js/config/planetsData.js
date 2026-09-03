@@ -1,6 +1,6 @@
 /**
  * Centralized Configuration & Metadata for Solar System Objects
- * Expanded for Segment 3 with Scientific Data.
+ * Expanded for Segment 4 with Major Satellite IDs.
  */
 
 export const SUN_CONFIG = {
@@ -23,7 +23,8 @@ export const SUN_CONFIG = {
   mass: '1.989 × 10³⁰ kg (333,000x Earth)',
   surfaceTemp: '5,500 °C (Core: 15 Million °C)',
   atmosphere: '73% Hydrogen, 25% Helium',
-  gravity: '274.0 m/s² (28x Earth)'
+  gravity: '274.0 m/s² (28x Earth)',
+  majorSatelliteIds: []
 };
 
 export const PLANETS_DATA = [
@@ -51,7 +52,8 @@ export const PLANETS_DATA = [
     mass: '3.301 × 10²³ kg (0.055x Earth)',
     surfaceTemp: '-180 °C to 430 °C',
     atmosphere: 'Trace Sodium, Helium, Oxygen',
-    gravity: '3.7 m/s² (0.38x Earth)'
+    gravity: '3.7 m/s² (0.38x Earth)',
+    majorSatelliteIds: []
   },
   {
     id: 'venus',
@@ -77,7 +79,8 @@ export const PLANETS_DATA = [
     mass: '4.867 × 10²⁴ kg (0.815x Earth)',
     surfaceTemp: '465 °C (Mean)',
     atmosphere: '96.5% Carbon Dioxide, 3.5% Nitrogen',
-    gravity: '8.87 m/s² (0.90x Earth)'
+    gravity: '8.87 m/s² (0.90x Earth)',
+    majorSatelliteIds: []
   },
   {
     id: 'earth',
@@ -105,7 +108,8 @@ export const PLANETS_DATA = [
     mass: '5.972 × 10²⁴ kg',
     surfaceTemp: '15 °C (Mean)',
     atmosphere: '78% Nitrogen, 21% Oxygen, 1% Argon',
-    gravity: '9.81 m/s² (1.00x Earth)'
+    gravity: '9.81 m/s² (1.00x Earth)',
+    majorSatelliteIds: ['moon']
   },
   {
     id: 'mars',
@@ -131,7 +135,8 @@ export const PLANETS_DATA = [
     mass: '6.417 × 10²³ kg (0.107x Earth)',
     surfaceTemp: '-63 °C (Mean)',
     atmosphere: '95% Carbon Dioxide, 2.6% Nitrogen',
-    gravity: '3.72 m/s² (0.38x Earth)'
+    gravity: '3.72 m/s² (0.38x Earth)',
+    majorSatelliteIds: ['phobos', 'deimos']
   },
   {
     id: 'jupiter',
@@ -157,7 +162,8 @@ export const PLANETS_DATA = [
     mass: '1.898 × 10²⁷ kg (318x Earth)',
     surfaceTemp: '-110 °C (Cloud tops)',
     atmosphere: '90% Hydrogen, 10% Helium',
-    gravity: '24.79 m/s² (2.53x Earth)'
+    gravity: '24.79 m/s² (2.53x Earth)',
+    majorSatelliteIds: ['io', 'europa', 'ganymede', 'callisto']
   },
   {
     id: 'saturn',
@@ -192,7 +198,8 @@ export const PLANETS_DATA = [
     mass: '5.683 × 10²⁶ kg (95x Earth)',
     surfaceTemp: '-140 °C (Cloud tops)',
     atmosphere: '96% Hydrogen, 3% Helium',
-    gravity: '10.44 m/s² (1.06x Earth)'
+    gravity: '10.44 m/s² (1.06x Earth)',
+    majorSatelliteIds: ['titan', 'enceladus', 'rhea', 'iapetus']
   },
   {
     id: 'uranus',
@@ -227,7 +234,8 @@ export const PLANETS_DATA = [
     mass: '8.681 × 10²⁵ kg (14.5x Earth)',
     surfaceTemp: '-195 °C (Mean)',
     atmosphere: '83% Hydrogen, 15% Helium, 2% Methane',
-    gravity: '8.69 m/s² (0.89x Earth)'
+    gravity: '8.69 m/s² (0.89x Earth)',
+    majorSatelliteIds: ['titania', 'oberon', 'ariel']
   },
   {
     id: 'neptune',
@@ -253,6 +261,7 @@ export const PLANETS_DATA = [
     mass: '1.024 × 10²⁶ kg (17x Earth)',
     surfaceTemp: '-200 °C (Mean)',
     atmosphere: '80% Hydrogen, 19% Helium, 1% Methane',
-    gravity: '11.15 m/s² (1.14x Earth)'
+    gravity: '11.15 m/s² (1.14x Earth)',
+    majorSatelliteIds: ['triton']
   }
 ];

@@ -1,8 +1,9 @@
 import { PLANETS_DATA } from '../config/planetsData.js';
 import { SATELLITES_DATA } from '../config/satellitesData.js';
+import { ARTIFICIAL_SATELLITES_DATA } from '../config/artificialSatellitesData.js';
 
 /**
- * Modular Tabbed Information Panel for Segment 4 (Planets & Satellites Integration)
+ * Redesigned Modular Tabbed Information Panel (Segment 4 — Artificial Satellites Integration)
  */
 export class InfoPanel {
   constructor() {
@@ -44,15 +45,17 @@ export class InfoPanel {
     if (!this.currentData) return;
 
     const data = this.currentData;
+    const isArtificial = data.category === 'artificial';
     const isMoon = data.type === 'satellite' || data.type === 'Natural Satellite' || data.type === 'Galilean Satellite';
-    const parentPlanet = isMoon ? PLANETS_DATA.find(p => p.id === data.parentPlanetId) : null;
+    const parentId = isArtificial ? data.parentBodyId : (isMoon ? data.parentPlanetId : null);
+    const parentPlanet = parentId ? (PLANETS_DATA.find(p => p.id === parentId) || { name: parentId.toUpperCase() }) : null;
 
     this.container.innerHTML = `
       <div class="panel-header">
         <div class="panel-title-group">
           <h2 class="panel-planet-title">${data.name}</h2>
           <span class="panel-planet-subtitle">
-            ${isMoon ? `NATURAL SATELLITE OF ${parentPlanet ? parentPlanet.name.toUpperCase() : data.parentPlanetId.toUpperCase()}` : (data.positionFromSun || data.type || '')}
+            ${isArtificial ? `ARTIFICIAL SPACECRAFT \u2022 ${data.launchYear} \u2022 ${data.countryAgency}` : (isMoon ? `NATURAL SATELLITE OF ${parentPlanet.name.toUpperCase()}` : (data.positionFromSun || data.type || ''))}
           </span>
         </div>
         <button class="panel-close-btn" id="panel-close-btn" title="Close Panel">&times;</button>
@@ -60,21 +63,21 @@ export class InfoPanel {
 
       <div class="panel-tabs-header">
         <button class="tab-btn ${this.activeTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
-        <button class="tab-btn ${this.activeTab === 'science' ? 'active' : ''}" data-tab="science">Scientific Data</button>
+        <button class="tab-btn ${this.activeTab === 'science' ? 'active' : ''}" data-tab="science">${isArtificial ? 'Mission & History' : 'Scientific Data'}</button>
         <button class="tab-btn ${this.activeTab === 'satellites' ? 'active' : ''}" data-tab="satellites">
-          ${isMoon ? 'Parent Planet' : 'Moons'}
+          ${isArtificial || isMoon ? 'Parent Body' : 'Satellites'}
         </button>
         <button class="tab-btn ${this.activeTab === 'ai' ? 'active' : ''}" data-tab="ai">AI Insights</button>
       </div>
 
       <div class="panel-tab-body">
-        ${this.renderTabContent(data, isMoon, parentPlanet)}
+        ${this.renderTabContent(data, isArtificial, isMoon, parentPlanet)}
       </div>
 
       <div class="panel-actions-footer">
-        ${isMoon ? `
+        ${parentId ? `
           <button class="btn-action btn-parent" id="panel-btn-parent">
-            &larr; BACK TO ${parentPlanet ? parentPlanet.name.toUpperCase() : 'PLANET'}
+            &larr; BACK TO ${parentPlanet.name.toUpperCase()}
           </button>
         ` : `
           <button class="btn-action btn-focus" id="panel-btn-focus">🎯 Focus Target</button>
@@ -107,9 +110,9 @@ export class InfoPanel {
     }
 
     const parentBtn = document.getElementById('panel-btn-parent');
-    if (parentBtn && parentPlanet) {
+    if (parentBtn && parentId) {
       parentBtn.addEventListener('click', () => {
-        if (this.onSelectParentPlanetCallback) this.onSelectParentPlanetCallback(parentPlanet.id);
+        if (this.onSelectParentPlanetCallback) this.onSelectParentPlanetCallback(parentId);
       });
     }
 
@@ -127,32 +130,51 @@ export class InfoPanel {
     });
   }
 
-  renderTabContent(data, isMoon, parentPlanet) {
+  renderTabContent(data, isArtificial, isMoon, parentPlanet) {
     if (this.activeTab === 'overview') {
       return `
         <p class="panel-description">${data.description || 'No overview available.'}</p>
 
         <div class="panel-section-title">QUICK FACTS</div>
         <div class="panel-stats-grid">
-          <div class="stat-card">
-            <span class="stat-label">Diameter</span>
-            <span class="stat-value">${data.diameter || 'N/A'}</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">${isMoon ? 'Distance to Planet' : 'Distance to Sun'}</span>
-            <span class="stat-value">${data.distanceFromPlanet || data.distanceFromSun || 'N/A'}</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Orbital Period</span>
-            <span class="stat-value">${data.orbitalPeriod || 'N/A'}</span>
-          </div>
-          <div class="stat-card">
-            <span class="stat-label">Rotation Period</span>
-            <span class="stat-value">${data.rotationPeriod || 'N/A'}</span>
-          </div>
+          ${isArtificial ? `
+            <div class="stat-card">
+              <span class="stat-label">Launch Year</span>
+              <span class="stat-value" style="color: #fbbf24">${data.launchYear}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Agency / Country</span>
+              <span class="stat-value">${data.countryAgency}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Mission Category</span>
+              <span class="stat-value">${data.missionType}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Orbit Type</span>
+              <span class="stat-value">${data.orbitType}</span>
+            </div>
+          ` : `
+            <div class="stat-card">
+              <span class="stat-label">Diameter</span>
+              <span class="stat-value">${data.diameter || 'N/A'}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">${isMoon ? 'Distance to Planet' : 'Distance to Sun'}</span>
+              <span class="stat-value">${data.distanceFromPlanet || data.distanceFromSun || 'N/A'}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Orbital Period</span>
+              <span class="stat-value">${data.orbitalPeriod || 'N/A'}</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Rotation Period</span>
+              <span class="stat-value">${data.rotationPeriod || 'N/A'}</span>
+            </div>
+          `}
         </div>
 
-        ${!isMoon && data.majorSatelliteIds && data.majorSatelliteIds.length > 0 ? `
+        ${!isArtificial && !isMoon && data.majorSatelliteIds && data.majorSatelliteIds.length > 0 ? `
           <div class="panel-section-title" style="margin-top: 12px;">MAJOR MOONS</div>
           <div class="moon-badges-container">
             ${data.majorSatelliteIds.map(mId => {
@@ -165,6 +187,28 @@ export class InfoPanel {
     }
 
     if (this.activeTab === 'science') {
+      if (isArtificial) {
+        return `
+          <div class="panel-section-title">HISTORICAL SIGNIFICANCE & STATUS</div>
+          <p class="panel-description" style="margin-bottom: 10px;">${data.significance || 'No historical entry recorded.'}</p>
+
+          <div class="science-table">
+            <div class="science-row">
+              <span class="sc-label">Operational Status</span>
+              <span class="sc-val" style="color: #38bdf8">${data.status || 'N/A'}</span>
+            </div>
+            <div class="science-row">
+              <span class="sc-label">Dimensions</span>
+              <span class="sc-val">${data.diameter || 'N/A'}</span>
+            </div>
+            <div class="science-row">
+              <span class="sc-label">Orbital Period</span>
+              <span class="sc-val">${data.orbitalPeriod || 'N/A'}</span>
+            </div>
+          </div>
+        `;
+      }
+
       return `
         <div class="panel-section-title">PHYSICAL & ATMOSPHERIC PARAMETERS</div>
         <div class="science-table">
@@ -180,31 +224,25 @@ export class InfoPanel {
             <span class="sc-label">${isMoon ? 'Composition' : 'Atmosphere'}</span>
             <span class="sc-val">${data.composition || data.atmosphere || 'N/A'}</span>
           </div>
-          ${!isMoon ? `
-            <div class="science-row">
-              <span class="sc-label">Surface Gravity</span>
-              <span class="sc-val">${data.gravity || 'N/A'}</span>
-            </div>
-          ` : ''}
         </div>
       `;
     }
 
     if (this.activeTab === 'satellites') {
-      if (isMoon && parentPlanet) {
+      if ((isArtificial || isMoon) && parentPlanet) {
         return `
           <div class="parent-planet-card">
             <div class="pp-title-group">
-              <span class="pp-label">PARENT PLANET</span>
+              <span class="pp-label">PARENT BODY</span>
               <h3 class="pp-name">${parentPlanet.name}</h3>
-              <span class="pp-type">${parentPlanet.type}</span>
+              <span class="pp-type">${parentPlanet.type || ''}</span>
             </div>
-            <p class="pp-desc">${parentPlanet.description}</p>
+            <p class="pp-desc">${parentPlanet.description || ''}</p>
           </div>
         `;
       }
 
-      if (!isMoon && data.majorSatelliteIds && data.majorSatelliteIds.length > 0) {
+      if (!isArtificial && !isMoon && data.majorSatelliteIds && data.majorSatelliteIds.length > 0) {
         return `
           <div class="panel-section-title">MAJOR SATELLITES (${data.majorSatelliteIds.length})</div>
           <div class="moon-list-detailed">

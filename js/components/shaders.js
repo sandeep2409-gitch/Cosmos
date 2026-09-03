@@ -2,13 +2,14 @@ import * as THREE from 'three';
 
 /**
  * Custom Photorealistic GLSL Shaders for Atmosphere Rayleigh Scattering, Sun Corona & Earth Day/Night
+ * Tuned for crisp, non-bloated planetary atmospheres and solar surface details.
  */
 
 export class Shaders {
   /**
    * Atmospheric Rayleigh Scattering Shader Material
    */
-  static createAtmosphereMaterial(colorHex = 0x38bdf8, power = 3.5, coefficient = 0.9) {
+  static createAtmosphereMaterial(colorHex = 0x38bdf8, power = 5.5, coefficient = 0.92) {
     const color = new THREE.Color(colorHex);
 
     return new THREE.ShaderMaterial({
@@ -35,7 +36,7 @@ export class Shaders {
         void main() {
           vec3 viewVector = normalize(-vPosition);
           float intensity = pow(clamp(coefficient - dot(vNormal, viewVector), 0.0, 1.0), power);
-          gl_FragColor = vec4(color, intensity);
+          gl_FragColor = vec4(color, intensity * 0.85);
         }
       `,
       blending: THREE.AdditiveBlending,
@@ -90,10 +91,10 @@ export class Shaders {
           float mixFactor = smoothstep(-0.25, 0.25, lightIntensity);
 
           // Combine day and night textures
-          vec3 surfaceColor = mix(nightColor.rgb * 1.8, dayColor.rgb * (max(0.15, lightIntensity) + 0.1), mixFactor);
+          vec3 surfaceColor = mix(nightColor.rgb * 1.6, dayColor.rgb * (max(0.15, lightIntensity) + 0.1), mixFactor);
 
           // Add clouds on day and night sides
-          vec3 finalColor = mix(surfaceColor, vec3(1.0), cloudColor.a * cloudColor.r * (mixFactor * 0.8 + 0.2));
+          vec3 finalColor = mix(surfaceColor, vec3(1.0), cloudColor.a * cloudColor.r * (mixFactor * 0.75 + 0.15));
 
           gl_FragColor = vec4(finalColor, 1.0);
         }
@@ -127,16 +128,16 @@ export class Shaders {
 
         void main() {
           vec2 uv = vUv;
-          uv.x += sin(uv.y * 25.0 + time * 0.8) * 0.003;
-          uv.y += cos(uv.x * 25.0 + time * 0.8) * 0.003;
+          uv.x += sin(uv.y * 20.0 + time * 0.6) * 0.002;
+          uv.y += cos(uv.x * 20.0 + time * 0.6) * 0.002;
 
           vec4 texColor = texture2D(sunTexture, uv);
           
           vec3 viewVector = vec3(0.0, 0.0, 1.0);
-          float fresnel = pow(1.0 - dot(vNormal, viewVector), 2.0);
-          vec3 glowColor = vec3(1.2, 0.7, 0.2) * fresnel;
+          float fresnel = pow(1.0 - dot(vNormal, viewVector), 3.0);
+          vec3 glowColor = vec3(1.0, 0.5, 0.1) * fresnel * 0.6;
 
-          gl_FragColor = vec4(texColor.rgb * 1.3 + glowColor, 1.0);
+          gl_FragColor = vec4(texColor.rgb * 1.15 + glowColor, 1.0);
         }
       `,
       side: THREE.FrontSide

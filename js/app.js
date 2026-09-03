@@ -15,7 +15,7 @@ import { HelpModal } from './ui/helpModal.js';
 import { InfoPanel } from './ui/infoPanel.js';
 
 /**
- * Main Application Core — Segment 4 Satellite & Moon System
+ * Main Application Core — Contextual Satellite Visibility System
  */
 class Application {
   constructor() {
@@ -34,7 +34,7 @@ class Application {
     this.starfield = new Starfield(this.sceneManager.scene, 3500);
     this.sun = new Sun(this.sceneManager.scene);
 
-    // 3. Planets, Orbit Paths & Satellite Moons
+    // 3. Planets, Orbit Paths, Natural Moons & Artificial Spacecraft
     this.planetFactory = new PlanetFactory(this.sceneManager.scene);
 
     // 4. Camera Controls & Camera Animator
@@ -62,9 +62,14 @@ class Application {
       this.interactionManager.registerTarget(p.planetMesh, p.config);
     });
 
-    // Register 16 Satellite Moons as interactive targets
+    // Register 17 Natural Satellite Moons as interactive targets
     this.planetFactory.satelliteFactory.satellites.forEach(s => {
       this.interactionManager.registerTarget(s.moonMesh, s.config);
+    });
+
+    // Register 50+ Artificial Satellites & Spacecraft as interactive targets
+    this.planetFactory.artificialSatelliteFactory.spacecraftList.forEach(s => {
+      this.interactionManager.registerTarget(s.modelMesh, s.config);
     });
 
     // 6. UI Modules
@@ -75,7 +80,14 @@ class Application {
     this.simControls = new SimControls(
       (speed) => { this.timeMultiplier = speed; },
       (orbitsVisible) => { this.planetFactory.setOrbitPathsVisible(orbitsVisible); },
-      (labelsVisible) => { this.planetFactory.setPlanetLabelsVisible(labelsVisible); }
+      (labelsVisible) => { this.planetFactory.setPlanetLabelsVisible(labelsVisible); },
+      (layerName, visible) => {
+        if (layerName === 'moons') {
+          this.planetFactory.satelliteFactory.satellites.forEach(s => { s.pivot.visible = visible; });
+        } else {
+          this.planetFactory.artificialSatelliteFactory.setLayerVisible(layerName, visible);
+        }
+      }
     );
 
     this.topNav = new TopNav(
@@ -84,6 +96,7 @@ class Application {
           this.interactionManager.selectObjectById(id);
         } else {
           this.interactionManager.deselect();
+          this.planetFactory.setActiveFocusParent(null);
           this.cameraAnimator.resetToOverview();
         }
       },
@@ -116,13 +129,25 @@ class Application {
       this.cameraAnimator.resetToOverview();
     };
 
-    // On Celestial Object Selected (Planet or Moon)
+    // On Celestial Object Selected (Planet, Moon, or Artificial Spacecraft)
     this.interactionManager.onSelectCallback = (data, mesh) => {
       this.infoPanel.show(data);
       this.topNav.updateBreadcrumb(data);
       this.uiOverlay.setFocusButtonVisible(true);
 
-      const radius = mesh.userData.radius || data.radius || 3.0;
+      // Contextual Satellite Visibility: Show satellite orbits & labels only for active planet
+      let parentId = null;
+      if (data.type === 'planet' || data.type === 'star') {
+        parentId = data.id;
+      } else if (data.category === 'artificial') {
+        parentId = data.parentBodyId;
+      } else if (data.type === 'satellite') {
+        parentId = data.parentPlanetId;
+      }
+
+      this.planetFactory.setActiveFocusParent(parentId);
+
+      const radius = mesh.userData.radius || data.radius || 2.0;
       this.cameraAnimator.focusOnObject(mesh, radius);
     };
 
@@ -131,6 +156,7 @@ class Application {
       this.infoPanel.hide();
       this.topNav.updateBreadcrumb(null);
       this.uiOverlay.setFocusButtonVisible(false);
+      this.planetFactory.setActiveFocusParent(null);
     };
 
     // InfoPanel Moon Badge Clicked (e.g. [ Europa ])
@@ -138,7 +164,7 @@ class Application {
       this.interactionManager.selectObjectById(moonId);
     };
 
-    // InfoPanel Back To Parent Planet Clicked (e.g. ← BACK TO JUPITER)
+    // InfoPanel Back To Parent Planet Clicked (e.g. ← BACK TO EARTH)
     this.infoPanel.onSelectParentPlanetCallback = (planetId) => {
       this.interactionManager.selectObjectById(planetId);
     };
@@ -146,13 +172,14 @@ class Application {
     // InfoPanel Close Button Clicked
     this.infoPanel.onCloseCallback = () => {
       this.interactionManager.deselect();
+      this.planetFactory.setActiveFocusParent(null);
     };
 
     // Focus Target Button Clicked
     const handleFocus = () => {
       if (this.interactionManager.selectedMesh) {
         const mesh = this.interactionManager.selectedMesh;
-        const radius = mesh.userData.radius || 3.0;
+        const radius = mesh.userData.radius || 2.0;
         this.cameraAnimator.focusOnObject(mesh, radius);
       }
     };
@@ -164,6 +191,7 @@ class Application {
       this.interactionManager.deselect();
       this.infoPanel.hide();
       this.topNav.updateBreadcrumb(null);
+      this.planetFactory.setActiveFocusParent(null);
       this.cameraAnimator.resetToOverview();
     };
     this.infoPanel.onResetCallback = handleReset;
@@ -175,6 +203,7 @@ class Application {
       this.interactionManager.deselect();
       this.infoPanel.hide();
       this.helpModal.hide();
+      this.planetFactory.setActiveFocusParent(null);
     };
     this.controlsManager.onSpaceShortcut = () => {
       if (this.timeMultiplier > 0) {
@@ -193,7 +222,7 @@ class Application {
     // Update Sun Shaders & Scale Lerp
     this.sun.update(delta);
 
-    // Update Planet & Moon Orbital Motion with Time Speed Multiplier
+    // Update Planet, Moon & Artificial Spacecraft Orbital Physics
     this.planetFactory.update(delta, this.timeMultiplier);
 
     // Update Hover & Selection Ring Animations

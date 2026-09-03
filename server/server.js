@@ -1,0 +1,35 @@
+import express from 'express';
+import cors from 'cors';
+import { ENV } from './config/env.js';
+import { requestLogger } from './middleware/requestLogger.js';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+
+import healthRoutes from './routes/healthRoutes.js';
+import objectRoutes from './routes/objectRoutes.js';
+
+/**
+ * COSMOS Node.js + Express API Backend Server (Segment 5 Foundation)
+ */
+const app = express();
+
+// 1. Configure Middleware
+app.use(cors({ origin: '*' }));
+app.use(express.json());
+app.use(requestLogger);
+
+// 2. Register API v1 Versioned Routes
+app.use('/api/v1', healthRoutes);
+app.use('/api/v1', objectRoutes);
+
+// 3. Fallback Route & Error Handling Middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+// 4. Start Server on Configurable Port
+app.listen(ENV.PORT, () => {
+  console.log(`================================================`);
+  console.log(`🚀 COSMOS Backend API running on port ${ENV.PORT}`);
+  console.log(`📡 Health Check: http://localhost:${ENV.PORT}/api/v1/health`);
+  console.log(`🌌 Objects API:  http://localhost:${ENV.PORT}/api/v1/objects`);
+  console.log(`================================================`);
+});

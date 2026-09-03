@@ -7,7 +7,7 @@
   --accent-cyan: #38bdf8;
   --accent-blue: #60a5fa;
   --accent-gold: #fbbf24;
-  --glass-bg: rgba(15, 23, 42, 0.82);
+  --glass-bg: rgba(15, 23, 42, 0.85);
   --glass-border: rgba(255, 255, 255, 0.14);
   --glass-blur: blur(18px);
   --font-heading: 'Space Grotesk', sans-serif;
@@ -150,7 +150,7 @@ html, body {
 }
 
 .hero-card {
-  width: 480px;
+  width: 500px;
   max-width: 90vw;
   padding: 36px;
   background: var(--glass-bg);
@@ -406,14 +406,16 @@ html, body {
   top: 100%;
   right: 0;
   margin-top: 8px;
-  width: 220px;
+  width: 260px;
+  max-height: 480px;
+  overflow-y: auto;
   background: var(--glass-bg);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  border-radius: 12px;
-  padding: 8px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -429,12 +431,24 @@ html, body {
   pointer-events: auto;
 }
 
+.drawer-section-title {
+  font-family: var(--font-heading);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent-cyan);
+  text-transform: uppercase;
+  padding: 6px 8px 2px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-top: 4px;
+}
+
 .drawer-item {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 8px 10px;
+  padding: 7px 10px;
   background: none;
   border: none;
   border-radius: 6px;
@@ -455,7 +469,7 @@ html, body {
 
 .drawer-item-name {
   font-family: var(--font-heading);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: #ffffff;
   flex: 1;

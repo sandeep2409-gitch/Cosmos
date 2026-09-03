@@ -3,9 +3,10 @@ import { PLANETS_DATA } from '../config/planetsData.js';
 import { TextureGenerator } from './textureGen.js';
 import { Shaders } from './shaders.js';
 import { SatelliteFactory } from './satelliteFactory.js';
+import { ArtificialSatelliteFactory } from './artificialSatelliteFactory.js';
 
 /**
- * Factory and Controller for 3D Planets & Satellite Moon Systems
+ * Factory and Controller for 3D Planets, Natural Moons & Artificial Spacecraft
  */
 export class PlanetFactory {
   constructor(scene) {
@@ -16,6 +17,7 @@ export class PlanetFactory {
     this.labelsVisible = true;
 
     this.satelliteFactory = new SatelliteFactory(scene);
+    this.artificialSatelliteFactory = new ArtificialSatelliteFactory(scene);
 
     this.init();
   }
@@ -29,16 +31,16 @@ export class PlanetFactory {
 
   createPlanetLabelSprite(name, radius) {
     const canvas = document.createElement('canvas');
-    canvas.width = 512;
-    canvas.height = 128;
+    canvas.width = 384;
+    canvas.height = 96;
     const ctx = canvas.getContext('2d');
 
     ctx.fillStyle = 'rgba(8, 15, 30, 0.85)';
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.6)';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     
-    const r = 16;
-    const x = 20, y = 20, w = 472, h = 88;
+    const r = 12;
+    const x = 10, y = 10, w = 364, h = 76;
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -51,32 +53,32 @@ export class PlanetFactory {
 
     ctx.fillStyle = '#38bdf8';
     ctx.shadowColor = '#38bdf8';
-    ctx.shadowBlur = 12;
+    ctx.shadowBlur = 10;
     ctx.beginPath();
-    ctx.arc(60, 64, 10, 0, Math.PI * 2);
+    ctx.arc(45, 48, 8, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.shadowBlur = 0;
-    ctx.font = 'bold 36px "Space Grotesk", sans-serif';
+    ctx.font = 'bold 30px "Space Grotesk", sans-serif';
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'middle';
-    ctx.fillText(name.toUpperCase(), 95, 64);
+    ctx.fillText(name.toUpperCase(), 70, 48);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
     const spriteMat = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      depthTest: false
+      depthTest: true
     });
 
     const sprite = new THREE.Sprite(spriteMat);
-    const spriteScaleY = 3.5;
-    const spriteScaleX = spriteScaleY * (512 / 128);
+    const spriteScaleY = 2.2;
+    const spriteScaleX = spriteScaleY * (384 / 96);
     sprite.scale.set(spriteScaleX, spriteScaleY, 1);
 
-    const labelY = radius + (name.toLowerCase() === 'saturn' ? 4.5 : 2.5);
+    const labelY = radius + (name.toLowerCase() === 'saturn' ? 3.5 : 2.0);
     sprite.position.set(0, labelY, 0);
 
     return sprite;
@@ -149,12 +151,12 @@ export class PlanetFactory {
     }
 
     if (config.hasAtmosphere || config.color) {
-      const atmosphereGeo = new THREE.SphereGeometry(config.radius * 1.06, 64, 64);
+      const atmosphereGeo = new THREE.SphereGeometry(config.radius * 1.04, 64, 64);
       const atmosColor = config.atmosphereColor || config.color;
       const atmosphereMat = Shaders.createAtmosphereMaterial(
         atmosColor,
-        config.id === 'earth' ? 3.5 : 4.5,
-        0.95
+        config.id === 'earth' ? 4.5 : 5.5,
+        0.92
       );
       const atmosphereMesh = new THREE.Mesh(atmosphereGeo, atmosphereMat);
       planetContainer.add(atmosphereMesh);
@@ -198,6 +200,14 @@ export class PlanetFactory {
     // Create & Attach Natural Satellites (Moons)
     const moons = this.satelliteFactory.createSatellitesForPlanet(config, planetContainer);
 
+    // Create & Attach Artificial Satellites & Spacecraft
+    const artificialSats = this.artificialSatelliteFactory.createSpacecraftForParent(config, planetContainer);
+
+    // Attach moon artificial satellites
+    moons.forEach(m => {
+      this.artificialSatelliteFactory.createSpacecraftForParent(m.config, m.satelliteContainer);
+    });
+
     pivot.add(planetContainer);
     this.scene.add(pivot);
 
@@ -213,6 +223,7 @@ export class PlanetFactory {
       labelSprite,
       orbitLine,
       moons,
+      artificialSats,
       currentDistance: config.distance,
       targetDistance: config.distance,
       currentRadius: config.radius,
@@ -251,6 +262,11 @@ export class PlanetFactory {
     orbitLine.geometry.setFromPoints(points);
   }
 
+  setActiveFocusParent(parentId) {
+    this.satelliteFactory.setActiveParentId(parentId);
+    this.artificialSatelliteFactory.setActiveParentId(parentId);
+  }
+
   setScaleMode(mode = 'visual') {
     this.scaleMode = mode;
     this.planets.forEach(p => {
@@ -270,6 +286,7 @@ export class PlanetFactory {
       if (p.orbitLine) p.orbitLine.visible = visible;
     });
     this.satelliteFactory.setMoonOrbitPathsVisible(visible);
+    this.artificialSatelliteFactory.setOrbitPathsVisible(visible);
   }
 
   setPlanetLabelsVisible(visible) {
@@ -278,6 +295,7 @@ export class PlanetFactory {
       if (p.labelSprite) p.labelSprite.visible = visible;
     });
     this.satelliteFactory.setMoonLabelsVisible(visible);
+    this.artificialSatelliteFactory.setLabelsVisible(visible);
   }
 
   update(delta, timeSpeed = 1.0) {
@@ -311,7 +329,8 @@ export class PlanetFactory {
       }
     });
 
-    // Update Satellite Moons
+    // Update Satellite Moons & Artificial Spacecraft
     this.satelliteFactory.update(delta, timeSpeed);
+    this.artificialSatelliteFactory.update(delta, timeSpeed);
   }
 }

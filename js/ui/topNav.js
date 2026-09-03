@@ -1,8 +1,9 @@
 import { PLANETS_DATA, SUN_CONFIG } from '../config/planetsData.js';
 import { SATELLITES_DATA } from '../config/satellitesData.js';
+import { ARTIFICIAL_SATELLITES_DATA } from '../config/artificialSatellitesData.js';
 
 /**
- * Top Navigation Bar, Objects Drawer & Hierarchical Breadcrumb Component
+ * Top Navigation Bar, Categorized Objects Drawer & Hierarchical Breadcrumb Component
  */
 export class TopNav {
   constructor(onSelectObject, onOpenHelp) {
@@ -18,16 +19,60 @@ export class TopNav {
   }
 
   init() {
-    // Populate Objects Drawer
+    // Populate Categorized Objects Drawer
     if (this.objectsMenu) {
-      const allObjects = [SUN_CONFIG, ...PLANETS_DATA];
-      this.objectsMenu.innerHTML = allObjects.map(obj => `
-        <button class="drawer-item" data-id="${obj.id}">
-          <span class="drawer-item-dot" style="background-color: #${(obj.color || 0x38bdf8).toString(16).padStart(6, '0')}"></span>
-          <span class="drawer-item-name">${obj.name}</span>
-          <span class="drawer-item-type">${obj.type || ''}</span>
-        </button>
-      `).join('');
+      const planets = [SUN_CONFIG, ...PLANETS_DATA];
+      const moons = SATELLITES_DATA.slice(0, 8); // Top major moons
+      const isroMissions = ARTIFICIAL_SATELLITES_DATA.filter(s => s.countryAgency.includes('ISRO'));
+      const telescopes = ARTIFICIAL_SATELLITES_DATA.filter(s => s.missionType.toLowerCase().includes('astronomy') || s.name.includes('Webb') || s.name.includes('Hubble'));
+      const pioneers = ARTIFICIAL_SATELLITES_DATA.filter(s => s.layer === 'pioneers' && !s.countryAgency.includes('ISRO'));
+
+      this.objectsMenu.innerHTML = `
+        <div class="drawer-section-title">PLANETS & STARS</div>
+        ${planets.map(obj => `
+          <button class="drawer-item" data-id="${obj.id}">
+            <span class="drawer-item-dot" style="background-color: #${(obj.color || 0x38bdf8).toString(16).padStart(6, '0')}"></span>
+            <span class="drawer-item-name">${obj.name}</span>
+            <span class="drawer-item-type">${obj.type || ''}</span>
+          </button>
+        `).join('')}
+
+        <div class="drawer-section-title">MAJOR MOONS</div>
+        ${moons.map(obj => `
+          <button class="drawer-item" data-id="${obj.id}">
+            <span class="drawer-item-dot" style="background-color: #${(obj.color || 0x38bdf8).toString(16).padStart(6, '0')}"></span>
+            <span class="drawer-item-name">${obj.name}</span>
+            <span class="drawer-item-type">Moon</span>
+          </button>
+        `).join('')}
+
+        <div class="drawer-section-title">🚀 ISRO MISSIONS</div>
+        ${isroMissions.map(obj => `
+          <button class="drawer-item" data-id="${obj.id}">
+            <span class="drawer-item-dot" style="background-color: #f59e0b"></span>
+            <span class="drawer-item-name">${obj.name}</span>
+            <span class="drawer-item-type">${obj.launchYear}</span>
+          </button>
+        `).join('')}
+
+        <div class="drawer-section-title">🔭 SPACE TELESCOPES</div>
+        ${telescopes.map(obj => `
+          <button class="drawer-item" data-id="${obj.id}">
+            <span class="drawer-item-dot" style="background-color: #818cf8"></span>
+            <span class="drawer-item-name">${obj.name}</span>
+            <span class="drawer-item-type">${obj.launchYear}</span>
+          </button>
+        `).join('')}
+
+        <div class="drawer-section-title">🛰️ SPACE PIONEERS</div>
+        ${pioneers.map(obj => `
+          <button class="drawer-item" data-id="${obj.id}">
+            <span class="drawer-item-dot" style="background-color: #d1d5db"></span>
+            <span class="drawer-item-name">${obj.name}</span>
+            <span class="drawer-item-type">${obj.launchYear}</span>
+          </button>
+        `).join('')}
+      `;
 
       this.objectsMenu.querySelectorAll('.drawer-item').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -86,9 +131,9 @@ export class TopNav {
       return;
     }
 
-    if (data.type === 'satellite') {
-      const parentPlanet = PLANETS_DATA.find(p => p.id === data.parentPlanetId);
-      const parentName = parentPlanet ? parentPlanet.name.toUpperCase() : data.parentPlanetId.toUpperCase();
+    if (data.category === 'artificial' || data.type === 'satellite' || data.type === 'Natural Satellite' || data.type === 'Galilean Satellite') {
+      const parentId = data.parentBodyId || data.parentPlanetId || 'earth';
+      const parentName = parentId.toUpperCase();
 
       this.breadcrumbContainer.innerHTML = `
         <span class="bc-item bc-link" id="bc-solar">SOLAR SYSTEM</span>
@@ -105,7 +150,7 @@ export class TopNav {
 
       const bcParent = document.getElementById('bc-parent');
       if (bcParent) bcParent.addEventListener('click', () => {
-        if (this.onSelectObject) this.onSelectObject(data.parentPlanetId);
+        if (this.onSelectObject) this.onSelectObject(parentId);
       });
 
     } else {

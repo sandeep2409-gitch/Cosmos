@@ -1,0 +1,31 @@
+{
+  "name": "cosmos",
+  "version": "1.0.0",
+  "description": "COSMOS — Interactive 3D Solar System & Spacecraft Exploration Platform",
+  "main": "start.js",
+  "type": "module",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "node start.js",
+    "server": "node server/server.js",
+    "serve": "http-server -p 8080 -c-1"
+  },
+  "keywords": [
+    "threejs",
+    "astronomy",
+    "solar-system",
+    "express",
+    "spacecraft"
+  ],
+  "author": "Antigravity Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "http-server": "^14.1.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

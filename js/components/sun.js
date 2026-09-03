@@ -4,7 +4,7 @@ import { TextureGenerator } from './textureGen.js';
 import { Shaders } from './shaders.js';
 
 /**
- * Sun Object with Animated Solar Plasma Shader, Corona Glow & Scale Transition Support
+ * Sun Object with Animated Solar Plasma Shader, Crisp Corona Glow & Scale Transition Support
  */
 export class Sun {
   constructor(scene) {
@@ -32,15 +32,15 @@ export class Sun {
     this.mesh.userData = { id: 'sun', ...this.config, type: 'star' };
     this.group.add(this.mesh);
 
-    // 3. Inner Corona Glow Mesh
-    const glowGeometry = new THREE.SphereGeometry(this.config.radius * 1.15, 64, 64);
-    const glowMaterial = Shaders.createAtmosphereMaterial(0xffbe3b, 3.5, 0.96);
+    // 3. Inner Corona Glow Mesh (Tight 1.04x scale)
+    const glowGeometry = new THREE.SphereGeometry(this.config.radius * 1.04, 64, 64);
+    const glowMaterial = Shaders.createAtmosphereMaterial(0xffbe3b, 5.5, 0.95);
     this.glowMesh = new THREE.Mesh(glowGeometry, glowMaterial);
     this.group.add(this.glowMesh);
 
-    // 4. Secondary Soft Solar Haze
-    const outerGlowGeo = new THREE.SphereGeometry(this.config.radius * 1.28, 32, 32);
-    const outerGlowMat = Shaders.createAtmosphereMaterial(0xff9900, 4.5, 0.98);
+    // 4. Secondary Soft Solar Haze (Tight 1.08x scale)
+    const outerGlowGeo = new THREE.SphereGeometry(this.config.radius * 1.08, 32, 32);
+    const outerGlowMat = Shaders.createAtmosphereMaterial(0xff9900, 6.5, 0.98);
     this.outerGlow = new THREE.Mesh(outerGlowGeo, outerGlowMat);
     this.group.add(this.outerGlow);
 

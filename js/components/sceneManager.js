@@ -7,7 +7,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 /**
  * Three.js Scene, Camera, WebGL, Shadow Maps & Post-Processing Bloom Manager
- * Expanded for Real AU Astronomical Scale (Far plane 25,000).
+ * Tuned for crisp, non-bloated cinematic space visuals.
  */
 export class SceneManager {
   constructor(containerElement) {
@@ -33,7 +33,7 @@ export class SceneManager {
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.15;
+    this.renderer.toneMappingExposure = 1.1;
     
     // Enable PCF Soft Shadow Mapping
     this.renderer.shadowMap.enabled = true;
@@ -53,7 +53,7 @@ export class SceneManager {
     // 5. Lighting Setup
     this.setupLighting();
 
-    // 6. Post-Processing Pipeline (Unreal Bloom)
+    // 6. Post-Processing Pipeline (Unreal Bloom - Tuned for crispness)
     this.setupPostProcessing();
 
     // 7. Handle Window Resizing
@@ -62,11 +62,11 @@ export class SceneManager {
 
   setupLighting() {
     // Ambient light baseline
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.22);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.25);
     this.scene.add(ambientLight);
 
     // Sun Point Light casting real-time soft shadows
-    this.sunLight = new THREE.PointLight(0xffffff, 2.8, 12000, 0.2);
+    this.sunLight = new THREE.PointLight(0xffffff, 2.5, 12000, 0.2);
     this.sunLight.position.set(0, 0, 0);
     this.sunLight.castShadow = true;
     this.sunLight.shadow.mapSize.width = 2048;
@@ -84,9 +84,9 @@ export class SceneManager {
     const renderPass = new RenderPass(this.scene, this.camera);
     this.composer.addPass(renderPass);
 
-    // Cinematic Unreal Bloom Pass
+    // Cinematic Unreal Bloom Pass (Strength 0.4, Radius 0.4, Threshold 0.3 for crisp highlights)
     const resolution = new THREE.Vector2(window.innerWidth, window.innerHeight);
-    this.bloomPass = new UnrealBloomPass(resolution, 0.65, 0.45, 0.25);
+    this.bloomPass = new UnrealBloomPass(resolution, 0.4, 0.4, 0.3);
     this.composer.addPass(this.bloomPass);
 
     const outputPass = new OutputPass();

@@ -9,16 +9,17 @@ export class SatelliteFactory {
   constructor(scene) {
     this.scene = scene;
     this.satellites = [];
+    this.activeParentId = null; // null = overview mode (hide satellite orbits & labels)
     this.orbitsVisible = true;
     this.labelsVisible = true;
   }
 
-  createSatellitesForPlanet(planetConfig, parentPlanetContainer) {
+  createSatellitesForPlanet(planetConfig, planetContainer) {
     const moonConfigs = SATELLITES_DATA.filter(s => s.parentPlanetId === planetConfig.id);
     const createdMoons = [];
 
     moonConfigs.forEach(config => {
-      const moonData = this.createSatellite(config, parentPlanetContainer);
+      const moonData = this.createSatellite(config, planetContainer);
       this.satellites.push(moonData);
       createdMoons.push(moonData);
     });
@@ -26,18 +27,18 @@ export class SatelliteFactory {
     return createdMoons;
   }
 
-  createSatelliteLabelSprite(name, radius) {
+  createMoonLabelSprite(name) {
     const canvas = document.createElement('canvas');
     canvas.width = 384;
     canvas.height = 96;
     const ctx = canvas.getContext('2d');
 
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.82)';
+    ctx.fillStyle = 'rgba(8, 15, 30, 0.85)';
     ctx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
     ctx.lineWidth = 3;
     
-    const r = 12;
-    const x = 10, y = 10, w = 364, h = 76;
+    const r = 10;
+    const x = 8, y = 8, w = 368, h = 80;
     ctx.beginPath();
     ctx.moveTo(x + r, y);
     ctx.arcTo(x + w, y, x + w, y + h, r);
@@ -48,51 +49,38 @@ export class SatelliteFactory {
     ctx.fill();
     ctx.stroke();
 
-    // Small cyan dot
-    ctx.fillStyle = '#38bdf8';
-    ctx.beginPath();
-    ctx.arc(45, 48, 7, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Moon name
-    ctx.font = 'bold 28px "Space Grotesk", sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.textAlign = 'left';
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 26px "Space Grotesk", sans-serif';
+    ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(name.toUpperCase(), 70, 48);
+    ctx.fillText(`🌙 ${name.toUpperCase()}`, 192, 48);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
     const spriteMat = new THREE.SpriteMaterial({
       map: texture,
       transparent: true,
-      depthTest: false
+      depthTest: true
     });
 
     const sprite = new THREE.Sprite(spriteMat);
-    const spriteScaleY = 2.2;
+    const spriteScaleY = 1.3;
     const spriteScaleX = spriteScaleY * (384 / 96);
     sprite.scale.set(spriteScaleX, spriteScaleY, 1);
-    sprite.position.set(0, radius + 1.2, 0);
+    sprite.position.set(0, 1.4, 0);
 
     return sprite;
   }
 
-  createSatellite(config, parentPlanetContainer) {
-    // 1. Orbital Pivot Container inside parent planet
+  createSatellite(config, planetContainer) {
     const pivot = new THREE.Group();
     pivot.name = `${config.id}-pivot`;
 
-    // 2. Satellite Container at orbital distance
     const satelliteContainer = new THREE.Group();
-    satelliteContainer.position.set(config.distanceFromParent, 0, 0);
+    satelliteContainer.position.set(config.orbitalDistance, 0, 0);
 
-    const tiltRad = THREE.MathUtils.degToRad(config.axialTilt);
-    satelliteContainer.rotation.z = tiltRad;
-
-    // 3. Moon Mesh
-    const geometry = new THREE.SphereGeometry(config.radius, 64, 64);
-    const texture = TextureGenerator.getTexture(config.textureType);
+    const geometry = new THREE.SphereGeometry(config.radius, 32, 32);
+    const texture = TextureGenerator.getTexture(config.textureType || 'moon');
 
     const material = new THREE.MeshStandardMaterial({
       map: texture,
@@ -116,16 +104,18 @@ export class SatelliteFactory {
 
     satelliteContainer.add(moonMesh);
 
-    // 4. 3D WebGL Canvas Sprite Label
-    const labelSprite = this.createSatelliteLabelSprite(config.name, config.radius);
+    // Label Sprite
+    const labelSprite = this.createMoonLabelSprite(config.name);
+    labelSprite.visible = false; // Hidden until planet clicked
     satelliteContainer.add(labelSprite);
 
     pivot.add(satelliteContainer);
-    parentPlanetContainer.add(pivot);
+    planetContainer.add(pivot);
 
-    // 5. Moon Dotted Orbit Line around Parent Planet
-    const orbitLine = this.createMoonOrbitLine(config.distanceFromParent);
-    parentPlanetContainer.add(orbitLine);
+    // Dotted Moon Orbit Line around Planet
+    const orbitLine = this.createOrbitLine(config.orbitalDistance, config.color);
+    orbitLine.visible = false; // Hidden until planet clicked
+    planetContainer.add(orbitLine);
 
     return {
       config,
@@ -138,7 +128,7 @@ export class SatelliteFactory {
     };
   }
 
-  createMoonOrbitLine(radius) {
+  createOrbitLine(radius, colorHex = 0x64748b) {
     const points = [];
     const segments = 128;
     for (let i = 0; i <= segments; i++) {
@@ -148,10 +138,10 @@ export class SatelliteFactory {
 
     const geometry = new THREE.BufferGeometry().setFromPoints(points);
     const material = new THREE.LineDashedMaterial({
-      color: 0x38bdf8,
+      color: colorHex,
       transparent: true,
-      opacity: 0.25,
-      dashSize: 0.5,
+      opacity: 0.4,
+      dashSize: 0.6,
       gapSize: 0.4
     });
 
@@ -160,30 +150,35 @@ export class SatelliteFactory {
     return line;
   }
 
+  setActiveParentId(parentId) {
+    this.activeParentId = parentId;
+    this.satellites.forEach(s => {
+      const isParentActive = parentId && (s.config.parentPlanetId === parentId);
+      s.labelSprite.visible = isParentActive && this.labelsVisible;
+      s.orbitLine.visible = isParentActive && this.orbitsVisible;
+    });
+  }
+
   setMoonOrbitPathsVisible(visible) {
     this.orbitsVisible = visible;
-    this.satellites.forEach(s => {
-      if (s.orbitLine) s.orbitLine.visible = visible;
-    });
+    this.setActiveParentId(this.activeParentId);
   }
 
   setMoonLabelsVisible(visible) {
     this.labelsVisible = visible;
-    this.satellites.forEach(s => {
-      if (s.labelSprite) s.labelSprite.visible = visible;
-    });
+    this.setActiveParentId(this.activeParentId);
   }
 
   update(delta, timeSpeed = 1.0) {
     const timeFactor = delta * 60 * timeSpeed;
 
     this.satellites.forEach(s => {
-      // Moon orbital motion around parent planet
-      s.orbitAngle += s.config.orbitSpeed * 0.015 * timeFactor;
-      s.satelliteContainer.position.x = Math.cos(s.orbitAngle) * s.config.distanceFromParent;
-      s.satelliteContainer.position.z = Math.sin(s.orbitAngle) * s.config.distanceFromParent;
+      // Moon orbital movement around planet
+      s.orbitAngle += s.config.orbitSpeed * 0.01 * timeFactor;
+      s.satelliteContainer.position.x = Math.cos(s.orbitAngle) * s.config.orbitalDistance;
+      s.satelliteContainer.position.z = Math.sin(s.orbitAngle) * s.config.orbitalDistance;
 
-      // Moon self-rotation
+      // Self rotation
       s.moonMesh.rotation.y += s.config.rotationSpeed * timeFactor;
     });
   }

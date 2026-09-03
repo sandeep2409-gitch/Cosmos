@@ -1,11 +1,12 @@
 /**
- * Simulation Control Bar Component (Time Speed & Display Toggles)
+ * Simulation Control Bar Component (Time Speed, Display Toggles & Layer Controls)
  */
 export class SimControls {
-  constructor(onTimeSpeedChange, onToggleOrbits, onToggleLabels) {
+  constructor(onTimeSpeedChange, onToggleOrbits, onToggleLabels, onToggleLayer) {
     this.onTimeSpeedChange = onTimeSpeedChange;
     this.onToggleOrbits = onToggleOrbits;
     this.onToggleLabels = onToggleLabels;
+    this.onToggleLayer = onToggleLayer;
 
     this.speed = 1.0;
     this.orbitsVisible = true;
@@ -44,6 +45,15 @@ export class SimControls {
         if (this.onToggleLabels) this.onToggleLabels(this.labelsVisible);
       });
     }
+
+    // Layer Checkboxes
+    const layerCheckboxes = document.querySelectorAll('.layer-checkbox');
+    layerCheckboxes.forEach(cb => {
+      cb.addEventListener('change', (e) => {
+        const layerName = cb.getAttribute('data-layer');
+        if (this.onToggleLayer) this.onToggleLayer(layerName, e.target.checked);
+      });
+    });
   }
 
   setSpeed(speedVal) {

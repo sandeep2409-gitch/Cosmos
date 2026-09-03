@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 
 /**
- * Raycasting & Selection Manager for Planets, Sun & Natural Satellites (Moons)
+ * Raycasting & Selection Manager for Planets, Sun, Moons & Spacecraft
+ * Features Crisp Thin Targeting Bracket Rings & Proportional Scaling.
  */
 export class InteractionManager {
   constructor(scene, camera, domElement) {
@@ -25,26 +26,26 @@ export class InteractionManager {
   }
 
   initVisualHighlights() {
-    // 1. Hover Highlight Ring Mesh
-    const hoverGeo = new THREE.RingGeometry(1, 1.25, 64);
+    // 1. Hover Highlight Ring (Thin Crisp Cyan Ring)
+    const hoverGeo = new THREE.RingGeometry(1.02, 1.07, 64);
     const hoverMat = new THREE.MeshBasicMaterial({
       color: 0x38bdf8,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.65,
+      opacity: 0.8,
       depthTest: false
     });
     this.hoverRing = new THREE.Mesh(hoverGeo, hoverMat);
     this.hoverRing.visible = false;
     this.scene.add(this.hoverRing);
 
-    // 2. Selection Pulsating Halo Ring Mesh
-    const selectGeo = new THREE.RingGeometry(1, 1.35, 64);
+    // 2. Selection Ring (Thin Crisp Gold/Cyan Double Ring)
+    const selectGeo = new THREE.RingGeometry(1.03, 1.09, 64);
     const selectMat = new THREE.MeshBasicMaterial({
       color: 0xfbbf24,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.85,
+      opacity: 0.9,
       depthTest: false
     });
     this.selectRing = new THREE.Mesh(selectGeo, selectMat);
@@ -142,7 +143,9 @@ export class InteractionManager {
     mesh.getWorldPosition(worldPos);
 
     const radius = mesh.userData.radius || 2.0;
-    this.hoverRing.scale.setScalar(radius * 1.5);
+    // Tight fit: 1.08x radius for planets, 1.15x for small spacecraft
+    const scaleFactor = radius > 1.5 ? radius * 1.08 : radius * 1.15;
+    this.hoverRing.scale.setScalar(scaleFactor);
     this.hoverRing.position.copy(worldPos);
     this.hoverRing.lookAt(this.camera.position);
     this.hoverRing.visible = true;
@@ -154,7 +157,8 @@ export class InteractionManager {
     mesh.getWorldPosition(worldPos);
 
     const radius = mesh.userData.radius || 2.0;
-    this.selectRing.scale.setScalar(radius * 1.7);
+    const scaleFactor = radius > 1.5 ? radius * 1.12 : radius * 1.2;
+    this.selectRing.scale.setScalar(scaleFactor);
     this.selectRing.position.copy(worldPos);
     this.selectRing.lookAt(this.camera.position);
     this.selectRing.visible = true;
@@ -169,16 +173,17 @@ export class InteractionManager {
       this.hoverRing.lookAt(this.camera.position);
     }
 
-    // Keep select ring facing camera & locked to object with pulsing animation
+    // Keep select ring facing camera & locked to object with subtle micro pulse
     if (this.selectRing.visible && this.selectedMesh) {
       const worldPos = new THREE.Vector3();
       this.selectedMesh.getWorldPosition(worldPos);
       this.selectRing.position.copy(worldPos);
       this.selectRing.lookAt(this.camera.position);
 
-      const pulse = 1.0 + Math.sin(Date.now() * 0.005) * 0.05;
+      const pulse = 1.0 + Math.sin(Date.now() * 0.004) * 0.02;
       const radius = this.selectedMesh.userData.radius || 2.0;
-      this.selectRing.scale.setScalar(radius * 1.7 * pulse);
+      const baseScale = radius > 1.5 ? radius * 1.12 : radius * 1.2;
+      this.selectRing.scale.setScalar(baseScale * pulse);
     }
   }
 }

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="COSMOS — Premium Interactive 3D Solar System Exploration Platform">
-  <title>COSMOS — Interactive Solar System</title>
+  <meta name="description" content="COSMOS — Premium Interactive 3D Solar System & Spacecraft Exploration Platform">
+  <title>COSMOS — Interactive Solar System & Spacecraft</title>
   
   <link rel="stylesheet" href="css/main.css">
 
@@ -40,10 +40,10 @@
   <!-- 3. Cinematic Hero Introduction Overlay -->
   <div id="hero-intro" class="hero-intro">
     <div class="hero-card">
-      <div class="hero-badge">NASA SCIENTIFIC INTERFACE</div>
+      <div class="hero-badge">NASA & ISRO SCIENTIFIC INTERFACE</div>
       <h1 class="hero-title">COSMOS</h1>
-      <p class="hero-headline">EXPLORE THE SOLAR SYSTEM</p>
-      <p class="hero-description">An interactive cinematic journey through the worlds and major moons that orbit our Sun.</p>
+      <p class="hero-headline">EXPLORE THE SOLAR SYSTEM & HISTORIC SPACECRAFT</p>
+      <p class="hero-description">An interactive cinematic journey through planets, natural moons, and human spaceflight history from Sputnik and Aryabhata to James Webb and Aditya-L1.</p>
 
       <div class="hero-actions">
         <button id="hero-start-btn" class="btn-hero-primary">🚀 START EXPLORING</button>
@@ -66,7 +66,6 @@
     </div>
 
     <div class="header-center">
-      <button class="header-btn btn-scale-toggle" id="hdr-btn-scale">📐 Real AU Scale</button>
       <button class="header-btn" id="hdr-btn-reset">🌌 Reset View</button>
       <button class="header-btn hidden" id="hdr-btn-focus">🎯 Focus</button>
     </div>
@@ -87,7 +86,7 @@
     <div class="control-badge"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</div>
     <div class="control-badge"><kbd>Space</kbd>/<kbd>Shift</kbd> Elevate</div>
     <div class="control-badge"><kbd>R</kbd> Reset</div>
-    <div class="control-badge"><span class="mouse-icon">🖱️</span> Drag to Orbit / Click Planet or Moon</div>
+    <div class="control-badge"><span class="mouse-icon">🖱️</span> Drag to Orbit / Click Object</div>
   </div>
 
   <!-- 6. Simulation Control Bar (Bottom HUD) -->
@@ -122,14 +121,38 @@
         </label>
       </div>
     </div>
+
+    <div class="sim-divider"></div>
+
+    <!-- Satellite Layer Toggles -->
+    <div class="sim-section">
+      <span class="sim-label">LAYERS</span>
+      <div class="toggle-group">
+        <label class="switch-label">
+          <input type="checkbox" class="layer-checkbox" data-layer="moons" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">Moons</span>
+        </label>
+        <label class="switch-label">
+          <input type="checkbox" class="layer-checkbox" data-layer="pioneers" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">Pioneers</span>
+        </label>
+        <label class="switch-label">
+          <input type="checkbox" class="layer-checkbox" data-layer="earth-sats" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">Earth Satellites</span>
+        </label>
+        <label class="switch-label">
+          <input type="checkbox" class="layer-checkbox" data-layer="deep-space" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">Deep Space</span>
+        </label>
+      </div>
+    </div>
   </div>
 
-  <!-- 7. Scale Disclaimer Footer -->
-  <div class="app-disclaimer" id="app-disclaimer">
-    <span>Scale Mode:</span> Visual Scale active (Planetary sizes and distances adjusted). Click <b>Real AU Scale</b> for astronomical proportions.
-  </div>
-
-  <!-- 8. About Modal -->
+  <!-- 7. About Modal -->
   <div id="modal-about" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
@@ -137,13 +160,13 @@
         <button class="modal-close" id="about-close-btn">&times;</button>
       </div>
       <div class="modal-body">
-        <p><b>COSMOS</b> is an advanced 3D solar system exploration web platform built using Three.js, Vanilla ES Modules, custom GLSL shaders, and WebGL physics.</p>
-        <p>Experience photorealistic planetary atmospheres, solar plasma dynamics, 16 natural satellites (moons), real-time PCF soft shadows, and accurate Astronomical Unit (AU) orbital physics.</p>
+        <p><b>COSMOS</b> is an advanced 3D solar system & spacecraft exploration platform built using Three.js, Vanilla ES Modules, custom GLSL shaders, and WebGL physics.</p>
+        <p>Experience photorealistic planetary atmospheres, solar plasma dynamics, 17 natural moons, and 50+ artificial satellites and deep space missions including Sputnik 1, Aryabhata, Hubble, JWST, Mangalyaan, Aditya-L1, NISAR, and Starlink.</p>
       </div>
     </div>
   </div>
 
-  <!-- 9. Help & Controls Modal -->
+  <!-- 8. Help & Controls Modal -->
   <div id="modal-help" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
@@ -158,7 +181,7 @@
               <li><b>Left Drag:</b> Orbit camera around target</li>
               <li><b>Right Drag:</b> Pan camera position</li>
               <li><b>Scroll Wheel:</b> Zoom in / out</li>
-              <li><b>Click Planet / Moon:</b> Select celestial body & focus</li>
+              <li><b>Click Planet / Moon / Spacecraft:</b> Select celestial body & focus</li>
               <li><b>Click Empty Space:</b> Deselect object</li>
             </ul>
           </div>

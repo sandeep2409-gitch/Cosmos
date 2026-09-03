@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="COSMOS - Interactive 3D Solar System Core built with Three.js">
-  <title>COSMOS — 3D Solar System Core</title>
-
-  <!-- Main Stylesheet -->
+  <meta name="description" content="COSMOS — Premium Interactive 3D Solar System Exploration Platform">
+  <title>COSMOS — Interactive Solar System</title>
+  
   <link rel="stylesheet" href="css/main.css">
 
-  <!-- Three.js ES Modules Import Map -->
   <script type="importmap">
     {
       "imports": {
@@ -20,10 +18,162 @@
   </script>
 </head>
 <body>
-  <!-- 3D WebGL Canvas Container -->
+  <!-- 1. 3D WebGL Canvas Container -->
   <div id="canvas-container"></div>
 
-  <!-- Application Main Module -->
+  <!-- 2. Polished Initial Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+      <div class="loading-logo">
+        <div class="loading-icon"></div>
+        <h1>COSMOS</h1>
+      </div>
+      <p class="loading-subtitle">SYSTEM INITIALIZATION</p>
+
+      <div class="loading-progress-container">
+        <div id="loading-progress-bar" class="loading-progress-bar"></div>
+      </div>
+      <span id="loading-status-text" class="loading-status-text">Initializing WebGL 3D Renderer...</span>
+    </div>
+  </div>
+
+  <!-- 3. Cinematic Hero Introduction Overlay -->
+  <div id="hero-intro" class="hero-intro">
+    <div class="hero-card">
+      <div class="hero-badge">NASA SCIENTIFIC INTERFACE</div>
+      <h1 class="hero-title">COSMOS</h1>
+      <p class="hero-headline">EXPLORE THE SOLAR SYSTEM</p>
+      <p class="hero-description">An interactive cinematic journey through the worlds that orbit our Sun.</p>
+
+      <div class="hero-actions">
+        <button id="hero-start-btn" class="btn-hero-primary">🚀 START EXPLORING</button>
+        <button id="hero-skip-btn" class="btn-hero-link">Skip Intro &rarr;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Top Navigation Bar & HUD Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-container">
+        <div class="logo-icon"></div>
+        <h1 class="logo-text">COSMOS</h1>
+      </div>
+      <div class="logo-tagline">Interactive Solar System</div>
+    </div>
+
+    <div class="header-center">
+      <button class="header-btn btn-scale-toggle" id="hdr-btn-scale">📐 Real AU Scale</button>
+      <button class="header-btn" id="hdr-btn-reset">🌌 Reset View</button>
+      <button class="header-btn hidden" id="hdr-btn-focus">🎯 Focus</button>
+    </div>
+
+    <nav class="header-right">
+      <button class="nav-link" id="nav-btn-explore">EXPLORE</button>
+      <div class="nav-dropdown-wrapper">
+        <button class="nav-link" id="nav-btn-objects">OBJECTS ▾</button>
+        <div id="nav-objects-dropdown" class="objects-dropdown"></div>
+      </div>
+      <button class="nav-link" id="nav-btn-about">ABOUT</button>
+      <button class="nav-link nav-icon-btn" id="nav-btn-help" title="Help & Controls">❓</button>
+    </nav>
+  </header>
+
+  <!-- 5. Controls Keyboard Hint Badge -->
+  <div class="app-controls-hint">
+    <div class="control-badge"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</div>
+    <div class="control-badge"><kbd>Space</kbd>/<kbd>Shift</kbd> Elevate</div>
+    <div class="control-badge"><kbd>R</kbd> Reset</div>
+    <div class="control-badge"><span class="mouse-icon">🖱️</span> Drag to Orbit / Click Object</div>
+  </div>
+
+  <!-- 6. Simulation Control Bar (Bottom HUD) -->
+  <div id="sim-controls-bar" class="sim-controls-bar">
+    <!-- Time Speed Selector -->
+    <div class="sim-section">
+      <span class="sim-label">TIME SPEED</span>
+      <div class="speed-btn-group">
+        <button class="speed-btn" data-speed="0">PAUSE</button>
+        <button class="speed-btn active" data-speed="1">1×</button>
+        <button class="speed-btn" data-speed="10">10×</button>
+        <button class="speed-btn" data-speed="100">100×</button>
+        <button class="speed-btn" data-speed="1000">1000×</button>
+      </div>
+    </div>
+
+    <div class="sim-divider"></div>
+
+    <!-- Display Toggles -->
+    <div class="sim-section">
+      <span class="sim-label">DISPLAY</span>
+      <div class="toggle-group">
+        <label class="switch-label">
+          <input type="checkbox" id="toggle-orbit-paths" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">Orbit Paths</span>
+        </label>
+        <label class="switch-label">
+          <input type="checkbox" id="toggle-planet-labels" checked>
+          <span class="switch-slider"></span>
+          <span class="switch-text">Planet Labels</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Scale Disclaimer Footer -->
+  <div class="app-disclaimer" id="app-disclaimer">
+    <span>Scale Mode:</span> Visual Scale active (Planetary sizes and distances adjusted). Click <b>Real AU Scale</b> for astronomical proportions.
+  </div>
+
+  <!-- 8. About Modal -->
+  <div id="modal-about" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>ABOUT COSMOS</h2>
+        <button class="modal-close" id="about-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p><b>COSMOS</b> is an advanced 3D solar system exploration web platform built using Three.js, Vanilla ES Modules, custom GLSL shaders, and WebGL physics.</p>
+        <p>Experience photorealistic planetary atmospheres, solar plasma dynamics, 4K surface textures, real-time PCF soft shadows, and accurate Astronomical Unit (AU) orbital physics.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Help & Controls Modal -->
+  <div id="modal-help" class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>CONTROLS & SHORTCUTS</h2>
+        <button class="modal-close" id="help-close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="help-grid">
+          <div class="help-column">
+            <h3>🖱️ Mouse Controls</h3>
+            <ul>
+              <li><b>Left Drag:</b> Orbit camera around target</li>
+              <li><b>Right Drag:</b> Pan camera position</li>
+              <li><b>Scroll Wheel:</b> Zoom in / out</li>
+              <li><b>Click Object:</b> Select celestial body & focus</li>
+              <li><b>Click Empty Space:</b> Deselect object</li>
+            </ul>
+          </div>
+          <div class="help-column">
+            <h3>⌨️ Keyboard Shortcuts</h3>
+            <ul>
+              <li><b>W / A / S / D:</b> Translate camera position</li>
+              <li><b>Space / Shift:</b> Elevate / lower camera altitude</li>
+              <li><b>R:</b> Reset camera to Solar System overview</li>
+              <li><b>ESC:</b> Close active panel or modal</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Main Script -->
   <script type="module" src="js/app.js"></script>
 </body>
 </html>

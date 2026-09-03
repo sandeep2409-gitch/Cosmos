@@ -4,13 +4,16 @@ import { TextureGenerator } from './textureGen.js';
 import { Shaders } from './shaders.js';
 
 /**
- * Factory and Controller for 3D High-Poly Planets, Real AU Astronomical Scaling & Smooth Scale Lerping
+ * Factory and Controller for 3D High-Poly Planets, Real AU Scaling & Display Toggles
  */
 export class PlanetFactory {
   constructor(scene) {
     this.scene = scene;
     this.planets = [];
     this.scaleMode = 'visual'; // 'visual' vs 'real'
+    this.orbitsVisible = true;
+    this.labelsVisible = true;
+
     this.init();
   }
 
@@ -254,11 +257,25 @@ export class PlanetFactory {
     });
   }
 
-  update(delta) {
-    const timeFactor = delta * 60;
+  setOrbitPathsVisible(visible) {
+    this.orbitsVisible = visible;
+    this.planets.forEach(p => {
+      if (p.orbitLine) p.orbitLine.visible = visible;
+    });
+  }
+
+  setPlanetLabelsVisible(visible) {
+    this.labelsVisible = visible;
+    this.planets.forEach(p => {
+      if (p.labelSprite) p.labelSprite.visible = visible;
+    });
+  }
+
+  update(delta, timeSpeed = 1.0) {
+    const timeFactor = delta * 60 * timeSpeed;
 
     this.planets.forEach(p => {
-      // Lerp distance and radius smoothly
+      // Lerp distance & radius
       if (Math.abs(p.currentDistance - p.targetDistance) > 0.05) {
         p.currentDistance += (p.targetDistance - p.currentDistance) * 3.0 * delta;
         this.updateOrbitLine(p.orbitLine, p.currentDistance);

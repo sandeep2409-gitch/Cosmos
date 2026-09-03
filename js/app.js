@@ -7,21 +7,27 @@ import { ControlsManager } from './components/controls.js';
 import { InteractionManager } from './components/interactionManager.js';
 import { CameraAnimator } from './components/cameraAnimator.js';
 import { UIOverlay } from './ui/overlay.js';
-import { InfoCard } from './ui/infoCard.js';
+import { LoadingScreen } from './ui/loadingScreen.js';
+import { HeroIntro } from './ui/heroIntro.js';
+import { TopNav } from './ui/topNav.js';
+import { SimControls } from './ui/simControls.js';
+import { HelpModal } from './ui/helpModal.js';
+import { InfoPanel } from './ui/infoPanel.js';
 
 /**
- * Main Application Core with Segment 2 Interaction System & Real AU Scale Support
+ * Main Application Core — Segment 3 Premium UI/UX & Visual Polish
  */
 class Application {
   constructor() {
     this.container = document.getElementById('canvas-container');
     this.clock = new THREE.Clock();
+    this.timeMultiplier = 1.0; // Global orbital simulation speed
     
     this.init();
   }
 
   init() {
-    // 1. Scene, Camera & WebGL / CSS2D Renderers
+    // 1. Scene, Camera & WebGL Renderers
     this.sceneManager = new SceneManager(this.container);
 
     // 2. Starfield & Central Sun
@@ -56,14 +62,35 @@ class Application {
       this.interactionManager.registerTarget(p.planetMesh, p.config);
     });
 
-    // 6. UI Overlay & Information Card Components
+    // 6. Segment 3 UI Modules
     this.uiOverlay = new UIOverlay();
-    this.infoCard = new InfoCard();
+    this.infoPanel = new InfoPanel();
+    this.helpModal = new HelpModal();
+
+    this.simControls = new SimControls(
+      (speed) => { this.timeMultiplier = speed; },
+      (orbitsVisible) => { this.planetFactory.setOrbitPathsVisible(orbitsVisible); },
+      (labelsVisible) => { this.planetFactory.setPlanetLabelsVisible(labelsVisible); }
+    );
+
+    this.topNav = new TopNav(
+      (id) => { this.interactionManager.selectObjectById(id); },
+      () => { this.helpModal.toggle(); }
+    );
+
+    this.heroIntro = new HeroIntro(() => {
+      // Intro completed / skipped
+    });
+
+    this.loadingScreen = new LoadingScreen(() => {
+      // Reveal Hero Intro when loading completes
+      this.heroIntro.show();
+    });
 
     // 7. Connect Callbacks
     this.setupCallbacks();
 
-    // 8. Start Main Loop
+    // 8. Start Main Animation Loop
     this.animate();
   }
 
@@ -73,11 +100,13 @@ class Application {
       this.planetFactory.setScaleMode(mode);
       this.sun.setScaleMode(mode);
       this.uiOverlay.updateDisclaimer(mode);
+      this.cameraAnimator.setOverviewForScaleMode(mode);
+      this.cameraAnimator.resetToOverview();
     };
 
     // On Celestial Object Selected
     this.interactionManager.onSelectCallback = (data, mesh) => {
-      this.infoCard.show(data);
+      this.infoPanel.show(data);
       this.uiOverlay.setFocusButtonVisible(true);
       const radius = mesh.userData.radius || data.radius || 3.0;
       this.cameraAnimator.focusOnObject(mesh, radius);
@@ -85,12 +114,12 @@ class Application {
 
     // On Object Deselected / Clicked Empty Space
     this.interactionManager.onDeselectCallback = () => {
-      this.infoCard.hide();
+      this.infoPanel.hide();
       this.uiOverlay.setFocusButtonVisible(false);
     };
 
-    // InfoCard Close Button Clicked
-    this.infoCard.onCloseCallback = () => {
+    // InfoPanel Close Button Clicked
+    this.infoPanel.onCloseCallback = () => {
       this.interactionManager.deselect();
     };
 
@@ -102,16 +131,33 @@ class Application {
         this.cameraAnimator.focusOnObject(mesh, radius);
       }
     };
-    this.infoCard.onFocusCallback = handleFocus;
+    this.infoPanel.onFocusCallback = handleFocus;
     this.uiOverlay.onFocusCallback = handleFocus;
 
-    // Reset View Button Clicked
+    // Reset View Button Clicked (UI Button or R key)
     const handleReset = () => {
       this.interactionManager.deselect();
+      this.infoPanel.hide();
       this.cameraAnimator.resetToOverview();
     };
-    this.infoCard.onResetCallback = handleReset;
+    this.infoPanel.onResetCallback = handleReset;
     this.uiOverlay.onResetCallback = handleReset;
+
+    // Global Keyboard Shortcuts (R key to reset, ESC key to close panels)
+    this.controlsManager.onResetShortcut = handleReset;
+    this.controlsManager.onEscapeShortcut = () => {
+      this.interactionManager.deselect();
+      this.infoPanel.hide();
+      this.helpModal.hide();
+    };
+    this.controlsManager.onSpaceShortcut = () => {
+      // Toggle Pause / Play simulation speed on Spacebar if no movement active
+      if (this.timeMultiplier > 0) {
+        this.simControls.setSpeed(0);
+      } else {
+        this.simControls.setSpeed(1);
+      }
+    };
   }
 
   animate() {
@@ -122,8 +168,8 @@ class Application {
     // Update Sun Shaders & Scale Lerp
     this.sun.update(delta);
 
-    // Update Planet Orbital Motion & Scale Lerp
-    this.planetFactory.update(delta);
+    // Update Planet Orbital Motion with Time Speed Multiplier
+    this.planetFactory.update(delta, this.timeMultiplier);
 
     // Update Hover & Selection Ring Animations
     this.interactionManager.update(delta);
@@ -134,12 +180,12 @@ class Application {
     // Update Camera Flight Controls Damping
     this.controlsManager.update(delta);
 
-    // Render 3D & CSS2D Scenes
+    // Render 3D & CSS2D Scenes via EffectComposer
     this.sceneManager.render();
   }
 }
 
-// Launch App on Load
+// Launch Application on DOM Load
 window.addEventListener('DOMContentLoaded', () => {
   new Application();
 });

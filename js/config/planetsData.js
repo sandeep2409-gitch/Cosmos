@@ -1,14 +1,14 @@
 /**
  * Centralized Configuration & Metadata for Solar System Objects
- * Includes Visual Adjusted Scale and Real Astronomical AU Scale.
+ * Expanded for Segment 3 with Scientific Data.
  */
 
 export const SUN_CONFIG = {
   id: 'sun',
   name: 'Sun',
   type: 'Yellow Dwarf Star',
-  radius: 14,             // Visual adjusted radius
-  realRadius: 218.0,      // True astronomical relative radius (109x Earth)
+  radius: 14,
+  realRadius: 218.0,
   color: 0xffaa00,
   emissive: 0xffaa00,
   emissiveIntensity: 1.2,
@@ -19,7 +19,11 @@ export const SUN_CONFIG = {
   distanceFromSun: '0 km',
   orbitalPeriod: 'N/A (Galactic Orbit ~230M yrs)',
   rotationPeriod: '27 days',
-  moonsCount: '8 Planets, 200+ Moons'
+  moonsCount: '8 Planets, 200+ Moons',
+  mass: '1.989 × 10³⁰ kg (333,000x Earth)',
+  surfaceTemp: '5,500 °C (Core: 15 Million °C)',
+  atmosphere: '73% Hydrogen, 25% Helium',
+  gravity: '274.0 m/s² (28x Earth)'
 };
 
 export const PLANETS_DATA = [
@@ -27,10 +31,10 @@ export const PLANETS_DATA = [
     id: 'mercury',
     name: 'Mercury',
     type: 'Terrestrial Planet',
-    radius: 1.2,          // Visual adjusted radius
-    realRadius: 0.76,     // True relative radius (0.38x Earth)
-    distance: 28,         // Visual adjusted distance
-    realDistance: 39,     // True astronomical distance (0.39 AU)
+    radius: 1.2,
+    realRadius: 0.76,
+    distance: 28,
+    realDistance: 39,
     orbitSpeed: 0.8,
     rotationSpeed: 0.005,
     axialTilt: 0.03,
@@ -43,16 +47,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '57.9 million km (0.39 AU)',
     orbitalPeriod: '88 days',
     rotationPeriod: '59 days',
-    moonsCount: '0'
+    moonsCount: '0',
+    mass: '3.301 × 10²³ kg (0.055x Earth)',
+    surfaceTemp: '-180 °C to 430 °C',
+    atmosphere: 'Trace Sodium, Helium, Oxygen',
+    gravity: '3.7 m/s² (0.38x Earth)'
   },
   {
     id: 'venus',
     name: 'Venus',
     type: 'Terrestrial Planet',
     radius: 2.2,
-    realRadius: 1.90,     // 0.95x Earth
+    realRadius: 1.90,
     distance: 42,
-    realDistance: 72,     // 0.72 AU
+    realDistance: 72,
     orbitSpeed: 0.6,
     rotationSpeed: -0.003,
     axialTilt: 177.3,
@@ -65,16 +73,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '108.2 million km (0.72 AU)',
     orbitalPeriod: '225 days',
     rotationPeriod: '243 days (Retrograde)',
-    moonsCount: '0'
+    moonsCount: '0',
+    mass: '4.867 × 10²⁴ kg (0.815x Earth)',
+    surfaceTemp: '465 °C (Mean)',
+    atmosphere: '96.5% Carbon Dioxide, 3.5% Nitrogen',
+    gravity: '8.87 m/s² (0.90x Earth)'
   },
   {
     id: 'earth',
     name: 'Earth',
     type: 'Terrestrial Planet',
     radius: 2.5,
-    realRadius: 2.00,     // 1.00x Earth baseline
+    realRadius: 2.00,
     distance: 60,
-    realDistance: 100,    // 1.00 AU baseline
+    realDistance: 100,
     orbitSpeed: 0.45,
     rotationSpeed: 0.01,
     axialTilt: 23.44,
@@ -89,16 +101,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '149.6 million km (1.00 AU)',
     orbitalPeriod: '365.25 days',
     rotationPeriod: '24 hours',
-    moonsCount: '1 (The Moon)'
+    moonsCount: '1 (The Moon)',
+    mass: '5.972 × 10²⁴ kg',
+    surfaceTemp: '15 °C (Mean)',
+    atmosphere: '78% Nitrogen, 21% Oxygen, 1% Argon',
+    gravity: '9.81 m/s² (1.00x Earth)'
   },
   {
     id: 'mars',
     name: 'Mars',
     type: 'Terrestrial Planet',
     radius: 1.6,
-    realRadius: 1.06,     // 0.53x Earth
+    realRadius: 1.06,
     distance: 78,
-    realDistance: 152,    // 1.52 AU
+    realDistance: 152,
     orbitSpeed: 0.35,
     rotationSpeed: 0.009,
     axialTilt: 25.19,
@@ -111,16 +127,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '227.9 million km (1.52 AU)',
     orbitalPeriod: '687 days',
     rotationPeriod: '24.6 hours',
-    moonsCount: '2 (Phobos & Deimos)'
+    moonsCount: '2 (Phobos & Deimos)',
+    mass: '6.417 × 10²³ kg (0.107x Earth)',
+    surfaceTemp: '-63 °C (Mean)',
+    atmosphere: '95% Carbon Dioxide, 2.6% Nitrogen',
+    gravity: '3.72 m/s² (0.38x Earth)'
   },
   {
     id: 'jupiter',
     name: 'Jupiter',
     type: 'Gas Giant',
     radius: 7.2,
-    realRadius: 22.42,    // 11.21x Earth
+    realRadius: 22.42,
     distance: 108,
-    realDistance: 520,    // 5.20 AU
+    realDistance: 520,
     orbitSpeed: 0.22,
     rotationSpeed: 0.025,
     axialTilt: 3.13,
@@ -133,16 +153,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '778.5 million km (5.20 AU)',
     orbitalPeriod: '11.86 years',
     rotationPeriod: '9.9 hours',
-    moonsCount: '95 known moons'
+    moonsCount: '95 known moons',
+    mass: '1.898 × 10²⁷ kg (318x Earth)',
+    surfaceTemp: '-110 °C (Cloud tops)',
+    atmosphere: '90% Hydrogen, 10% Helium',
+    gravity: '24.79 m/s² (2.53x Earth)'
   },
   {
     id: 'saturn',
     name: 'Saturn',
     type: 'Gas Giant',
     radius: 5.8,
-    realRadius: 18.90,    // 9.45x Earth
+    realRadius: 18.90,
     distance: 148,
-    realDistance: 954,    // 9.54 AU
+    realDistance: 954,
     orbitSpeed: 0.15,
     rotationSpeed: 0.022,
     axialTilt: 26.73,
@@ -164,16 +188,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '1.43 billion km (9.54 AU)',
     orbitalPeriod: '29.45 years',
     rotationPeriod: '10.7 hours',
-    moonsCount: '146 known moons'
+    moonsCount: '146 known moons',
+    mass: '5.683 × 10²⁶ kg (95x Earth)',
+    surfaceTemp: '-140 °C (Cloud tops)',
+    atmosphere: '96% Hydrogen, 3% Helium',
+    gravity: '10.44 m/s² (1.06x Earth)'
   },
   {
     id: 'uranus',
     name: 'Uranus',
     type: 'Ice Giant',
     radius: 3.8,
-    realRadius: 8.02,     // 4.01x Earth
+    realRadius: 8.02,
     distance: 185,
-    realDistance: 1919,   // 19.19 AU
+    realDistance: 1919,
     orbitSpeed: 0.1,
     rotationSpeed: -0.015,
     axialTilt: 97.77,
@@ -195,16 +223,20 @@ export const PLANETS_DATA = [
     distanceFromSun: '2.87 billion km (19.19 AU)',
     orbitalPeriod: '84 years',
     rotationPeriod: '17.2 hours',
-    moonsCount: '28 known moons'
+    moonsCount: '28 known moons',
+    mass: '8.681 × 10²⁵ kg (14.5x Earth)',
+    surfaceTemp: '-195 °C (Mean)',
+    atmosphere: '83% Hydrogen, 15% Helium, 2% Methane',
+    gravity: '8.69 m/s² (0.89x Earth)'
   },
   {
     id: 'neptune',
     name: 'Neptune',
     type: 'Ice Giant',
     radius: 3.6,
-    realRadius: 7.76,     // 3.88x Earth
+    realRadius: 7.76,
     distance: 220,
-    realDistance: 3007,   // 30.07 AU
+    realDistance: 3007,
     orbitSpeed: 0.07,
     rotationSpeed: 0.016,
     axialTilt: 28.32,
@@ -217,6 +249,10 @@ export const PLANETS_DATA = [
     distanceFromSun: '4.50 billion km (30.07 AU)',
     orbitalPeriod: '164.8 years',
     rotationPeriod: '16.1 hours',
-    moonsCount: '16 known moons'
+    moonsCount: '16 known moons',
+    mass: '1.024 × 10²⁶ kg (17x Earth)',
+    surfaceTemp: '-200 °C (Mean)',
+    atmosphere: '80% Hydrogen, 19% Helium, 1% Methane',
+    gravity: '11.15 m/s² (1.14x Earth)'
   }
 ];

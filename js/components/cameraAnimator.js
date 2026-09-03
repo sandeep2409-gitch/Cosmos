@@ -22,7 +22,18 @@ export class CameraAnimator {
     this.goalCameraPos = new THREE.Vector3();
     this.goalTargetPos = new THREE.Vector3();
 
-    this.lerpSpeed = 4.5; // Smooth exponential interpolation speed
+    this.lerpSpeed = 4.5; // Exponential interpolation speed
+  }
+
+  /**
+   * Adjust default overview camera position depending on Real AU scale vs Visual scale
+   */
+  setOverviewForScaleMode(mode = 'visual') {
+    if (mode === 'real') {
+      this.defaultCameraPos.set(0, 1800, 3800);
+    } else {
+      this.defaultCameraPos.set(0, 110, 230);
+    }
   }
 
   /**
@@ -36,7 +47,7 @@ export class CameraAnimator {
   }
 
   /**
-   * Reset camera smoothly back to default Solar System overview position
+   * Reset camera smoothly back to overview position
    */
   resetToOverview() {
     this.targetMesh = null;
@@ -56,7 +67,6 @@ export class CameraAnimator {
     const lerpFactor = Math.min(1.0, (1 - Math.exp(-this.lerpSpeed * delta)));
 
     if (this.isFocusing && this.targetMesh) {
-      // Get current world position of target planet mesh
       const worldPos = new THREE.Vector3();
       this.targetMesh.getWorldPosition(worldPos);
 
@@ -65,7 +75,6 @@ export class CameraAnimator {
       // Optimal viewing offset based on radius
       const offsetDist = Math.max(22, this.targetRadius * 3.4 + 10);
       
-      // Calculate offset vector from target in camera's direction
       const currentDir = new THREE.Vector3().subVectors(this.camera.position, this.controls.target);
       if (currentDir.lengthSq() < 0.1) currentDir.set(0, 1, 2);
       currentDir.normalize().multiplyScalar(offsetDist);
@@ -78,9 +87,8 @@ export class CameraAnimator {
     this.controls.target.lerp(this.goalTargetPos, lerpFactor);
     this.controls.update();
 
-    // Check if lerp transition has arrived close enough to goal
     if (this.isResetting) {
-      if (this.camera.position.distanceTo(this.goalCameraPos) < 0.5) {
+      if (this.camera.position.distanceTo(this.goalCameraPos) < 2.0) {
         this.isResetting = false;
       }
     }

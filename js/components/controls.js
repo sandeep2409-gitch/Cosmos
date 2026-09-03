@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 /**
- * Camera Controls Manager featuring Orbit Controls + Dynamic WASD Flight Navigation
+ * Camera Controls Manager featuring Orbit Controls + WASD Navigation & Global Shortcuts
  */
 export class ControlsManager {
   constructor(camera, domElement) {
@@ -11,6 +11,11 @@ export class ControlsManager {
 
     this.controls = new OrbitControls(camera, domElement);
     
+    // Callbacks for global key shortcuts
+    this.onResetShortcut = null;
+    this.onEscapeShortcut = null;
+    this.onSpaceShortcut = null;
+
     // Keyboard State Tracker
     this.keys = {
       w: false,
@@ -23,24 +28,17 @@ export class ControlsManager {
       shift: false
     };
 
-    this.baseMoveSpeed = 120; // Base units per second
+    this.baseMoveSpeed = 120;
     this.init();
     this.initKeyboard();
   }
 
   init() {
-    // Smooth Orbit Damping
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.05;
-
-    // Sensible Distance Boundaries (Up to 20,000 for 30 AU Neptune)
     this.controls.minDistance = 5;
     this.controls.maxDistance = 20000;
-
-    // Prevent camera flipping under ground
     this.controls.maxPolarAngle = Math.PI / 2 + 0.15;
-
-    // Initial Orbit Target at origin
     this.controls.target.set(0, 0, 0);
     this.controls.update();
   }
@@ -52,6 +50,17 @@ export class ControlsManager {
 
   onKeyChange(event, isPressed) {
     if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+
+    if (isPressed) {
+      if (event.code === 'KeyR') {
+        if (this.onResetShortcut) this.onResetShortcut();
+        return;
+      }
+      if (event.code === 'Escape') {
+        if (this.onEscapeShortcut) this.onEscapeShortcut();
+        return;
+      }
+    }
 
     switch (event.code) {
       case 'KeyW':
@@ -71,9 +80,11 @@ export class ControlsManager {
         this.keys.d = isPressed;
         break;
       case 'KeyE':
-      case 'Space':
         this.keys.e = isPressed;
+        break;
+      case 'Space':
         this.keys.space = isPressed;
+        if (isPressed && this.onSpaceShortcut) this.onSpaceShortcut();
         break;
       case 'KeyQ':
       case 'ShiftLeft':
@@ -85,11 +96,9 @@ export class ControlsManager {
   }
 
   update(delta = 0.016) {
-    // Dynamic flight speed based on distance from origin
     const distFromOrigin = this.camera.position.length();
     const dynamicSpeed = Math.max(this.baseMoveSpeed, distFromOrigin * 0.8);
 
-    // Handle WASD + QE Camera Translation
     if (this.keys.w || this.keys.s || this.keys.a || this.keys.d || this.keys.q || this.keys.e || this.keys.space || this.keys.shift) {
       const moveDistance = dynamicSpeed * delta;
 

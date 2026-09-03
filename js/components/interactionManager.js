@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 /**
  * Raycasting & Selection Manager for Planets, Sun, Moons & Spacecraft
- * Handles object selection and camera focus triggering (Highlighting rings removed).
+ * Features Recursive Sub-mesh Raycasting for small 3D spacecraft and labels.
  */
 export class InteractionManager {
   constructor(scene, camera, domElement) {
@@ -35,6 +35,16 @@ export class InteractionManager {
     this.domElement.addEventListener('click', (e) => this.onClick(e));
   }
 
+  findRegisteredTarget(intersectedObject) {
+    let curr = intersectedObject;
+    while (curr) {
+      const found = this.interactiveTargets.find(t => t.mesh === curr);
+      if (found) return found;
+      curr = curr.parent;
+    }
+    return null;
+  }
+
   onMouseMove(event) {
     const rect = this.domElement.getBoundingClientRect();
     this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -42,12 +52,13 @@ export class InteractionManager {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const meshes = this.interactiveTargets.map(t => t.mesh);
-    const intersects = this.raycaster.intersectObjects(meshes, false);
+    // Recursive search to hit children meshes inside spacecraft groups
+    const intersects = this.raycaster.intersectObjects(meshes, true);
 
     if (intersects.length > 0) {
-      const hitMesh = intersects[0].object;
-      if (this.hoveredMesh !== hitMesh) {
-        this.hoveredMesh = hitMesh;
+      const targetObj = this.findRegisteredTarget(intersects[0].object);
+      if (targetObj && this.hoveredMesh !== targetObj.mesh) {
+        this.hoveredMesh = targetObj.mesh;
         this.domElement.style.cursor = 'pointer';
       }
     } else {
@@ -65,11 +76,10 @@ export class InteractionManager {
 
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const meshes = this.interactiveTargets.map(t => t.mesh);
-    const intersects = this.raycaster.intersectObjects(meshes, false);
+    const intersects = this.raycaster.intersectObjects(meshes, true);
 
     if (intersects.length > 0) {
-      const hitMesh = intersects[0].object;
-      const targetObj = this.interactiveTargets.find(t => t.mesh === hitMesh);
+      const targetObj = this.findRegisteredTarget(intersects[0].object);
       if (targetObj) {
         this.selectObject(targetObj.mesh, targetObj.data);
       }
@@ -79,7 +89,7 @@ export class InteractionManager {
   }
 
   selectObjectById(id) {
-    const targetObj = this.interactiveTargets.find(t => t.data.id === id);
+    const targetObj = this.interactiveTargets.find(t => t.data.id.toLowerCase() === id.toLowerCase());
     if (targetObj) {
       this.selectObject(targetObj.mesh, targetObj.data);
     }
@@ -104,6 +114,6 @@ export class InteractionManager {
   }
 
   update(delta) {
-    // Highlighting rings completely removed
+    // No-op
   }
 }

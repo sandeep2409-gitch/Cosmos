@@ -7,21 +7,28 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import healthRoutes from './routes/healthRoutes.js';
 import objectRoutes from './routes/objectRoutes.js';
 import wikiRoutes from './routes/wikiRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 
 /**
- * COSMOS Node.js + Express API Backend Server (Segment 6 Wikipedia Integration)
+ * COSMOS Node.js + Express API Backend Server (Segment 7 AI Explanation)
  */
 const app = express();
 
 // 1. Configure Middleware
 app.use(cors({ origin: '*' }));
-app.use(express.json());
+app.use(express.json({ limit: '50kb' }));  // Hard cap body size for security
 app.use(requestLogger);
 
 // 2. Register API v1 Versioned Routes
 app.use('/api/v1', healthRoutes);
 app.use('/api/v1', objectRoutes);
 app.use('/api/v1', wikiRoutes);
+app.use('/api/v1', aiRoutes);
+
+// 3. Fallback Route & Error Handling Middleware
+app.use(notFoundHandler);
+app.use(errorHandler);
+
 
 // 3. Fallback Route & Error Handling Middleware
 app.use(notFoundHandler);

@@ -18,6 +18,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'pioneer',
     color: 0xd1d5db,
     orbitalDistance: 8.5,
+    orbitalPeriodDays: 0.0668, // 96.2 min
+    M0: 0.5,
     orbitSpeed: 1.4,
     rotationSpeed: 0.02,
     diameter: '58 cm sphere',
@@ -40,6 +42,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'pioneer',
     color: 0xa1a1aa,
     orbitalDistance: 9.2,
+    orbitalPeriodDays: 0.0720, // 103.7 min
+    M0: 1.2,
     orbitSpeed: 1.3,
     rotationSpeed: 0.015,
     diameter: '4 meters capsule',
@@ -62,6 +66,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'pioneer',
     color: 0x38bdf8,
     orbitalDistance: 10.0,
+    orbitalPeriodDays: 0.0797, // 114.8 min
+    M0: 2.1,
     orbitSpeed: 1.2,
     rotationSpeed: 0.03,
     diameter: '2.03 m cylinder',
@@ -84,6 +90,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'pioneer',
     color: 0xfbbf24,
     orbitalDistance: 11.2,
+    orbitalPeriodDays: 0.0932, // 134.2 min
+    M0: 3.4,
     orbitSpeed: 1.1,
     rotationSpeed: 0.02,
     diameter: '16.5 cm sphere',
@@ -106,6 +114,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'radar',
     color: 0x60a5fa,
     orbitalDistance: 12.5,
+    orbitalPeriodDays: 0.0689, // 99.2 min
+    M0: 0.2,
     orbitSpeed: 1.05,
     rotationSpeed: 0.01,
     diameter: '1.1 m cylinder',
@@ -128,6 +138,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telecom',
     color: 0x38bdf8,
     orbitalDistance: 13.8,
+    orbitalPeriodDays: 0.1042, // 2.5 hours
+    M0: 4.1,
     orbitSpeed: 0.95,
     rotationSpeed: 0.015,
     diameter: '88 cm sphere',
@@ -152,6 +164,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'pioneer',
     color: 0xf59e0b,
     orbitalDistance: 15.0,
+    orbitalPeriodDays: 0.0669, // 96.3 min
+    M0: 1.5,
     orbitSpeed: 0.9,
     rotationSpeed: 0.02,
     diameter: '1.4 m 26-sided polyhedron',
@@ -174,6 +188,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'radar',
     color: 0x10b981,
     orbitalDistance: 16.2,
+    orbitalPeriodDays: 0.0661, // 95.2 min
+    M0: 5.2,
     orbitSpeed: 0.85,
     rotationSpeed: 0.01,
     diameter: '1.4 m polyhedral bus',
@@ -196,6 +212,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'pioneer',
     color: 0xef4444,
     orbitalDistance: 17.5,
+    orbitalPeriodDays: 0.0674, // 97.0 min
+    M0: 2.8,
     orbitSpeed: 0.8,
     rotationSpeed: 0.015,
     diameter: '35 kg compact satellite',
@@ -218,6 +236,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telecom',
     color: 0xfbbf24,
     orbitalDistance: 24.0,
+    orbitalPeriodDays: 1.0, // 24 hours
+    M0: 0.1,
     orbitSpeed: 0.35,
     rotationSpeed: 0.005,
     diameter: '1.2 m cylindrical bus',
@@ -240,6 +260,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telecom',
     color: 0x38bdf8,
     orbitalDistance: 26.0,
+    orbitalPeriodDays: 1.0, // 24 hours
+    M0: 3.1,
     orbitSpeed: 0.32,
     rotationSpeed: 0.004,
     diameter: '2.1 m bus + 19 m solar array',
@@ -262,6 +284,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'radar',
     color: 0x34d399,
     orbitalDistance: 18.8,
+    orbitalPeriodDays: 0.0715, // 103 min
+    M0: 4.8,
     orbitSpeed: 0.75,
     rotationSpeed: 0.008,
     diameter: '1.6 m box + solar panels',
@@ -284,6 +308,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'probe',
     color: 0xf59e0b,
     orbitalDistance: 3.2,
+    orbitalPeriodDays: 0.0833, // 2 hours
+    M0: 1.1,
     orbitSpeed: 1.1,
     rotationSpeed: 0.01,
     diameter: '1.5 m cubical bus',
@@ -306,6 +332,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'probe',
     color: 0xef4444,
     orbitalDistance: 6.8,
+    orbitalPeriodDays: 3.0375, // 72.9 hours
+    M0: 5.5,
     orbitSpeed: 0.9,
     rotationSpeed: 0.01,
     diameter: '1.5 m bus + high-gain dish',
@@ -328,6 +356,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telescope',
     color: 0x818cf8,
     orbitalDistance: 19.8,
+    orbitalPeriodDays: 0.0681, // 98 min
+    M0: 2.2,
     orbitSpeed: 0.7,
     rotationSpeed: 0.008,
     diameter: '1.8 m spacecraft bus',
@@ -350,6 +380,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'radar',
     color: 0x38bdf8,
     orbitalDistance: 21.0,
+    orbitalPeriodDays: 0.0658, // 94.8 min
+    M0: 0.7,
     orbitSpeed: 0.65,
     rotationSpeed: 0.008,
     diameter: '2.0 m optical bus',
@@ -372,6 +404,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'probe',
     color: 0xf59e0b,
     orbitalDistance: 4.5,
+    orbitalPeriodDays: 0.0875, // 2.1 hours
+    M0: 3.3,
     orbitSpeed: 0.95,
     rotationSpeed: 0.01,
     diameter: '2.0 m box bus',
@@ -394,6 +428,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'probe',
     color: 0xfbbf24,
     orbitalDistance: 32.0,
+    orbitalPeriodDays: 178.0, // 178 days halo
+    M0: 0.5,
     orbitSpeed: 0.5,
     rotationSpeed: 0.008,
     diameter: '1.5 m solar observatory',
@@ -416,6 +452,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'radar',
     color: 0x34d399,
     orbitalDistance: 22.5,
+    orbitalPeriodDays: 0.0684, // 98.5 min
+    M0: 4.5,
     orbitSpeed: 0.6,
     rotationSpeed: 0.006,
     diameter: '12 m deployable reflector dish antenna',
@@ -440,6 +478,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telescope',
     color: 0x38bdf8,
     orbitalDistance: 23.5,
+    orbitalPeriodDays: 0.0662, // 95.4 min
+    M0: 1.8,
     orbitSpeed: 0.58,
     rotationSpeed: 0.005,
     diameter: '13.2 m cylinder + 2.4 m mirror',
@@ -462,6 +502,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telescope',
     color: 0xf59e0b,
     orbitalDistance: 40.0,
+    orbitalPeriodDays: 180.0, // ~6 months
+    M0: 3.9,
     orbitSpeed: 0.4,
     rotationSpeed: 0.004,
     diameter: '6.5 m beryllium gold mirror + 22 m sunshield',
@@ -484,6 +526,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telescope',
     color: 0xa855f7,
     orbitalDistance: 36.0,
+    orbitalPeriodDays: 372.5,
+    M0: 0.2,
     orbitSpeed: 0.45,
     rotationSpeed: 0.005,
     diameter: '4.7 m space telescope',
@@ -506,6 +550,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telescope',
     color: 0xec4899,
     orbitalDistance: 34.0,
+    orbitalPeriodDays: 370.0,
+    M0: 5.1,
     orbitSpeed: 0.48,
     rotationSpeed: 0.005,
     diameter: '4.4 m telescope assembly',
@@ -530,6 +576,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'telecom',
     color: 0x38bdf8,
     orbitalDistance: 8.0,
+    orbitalPeriodDays: 0.0660, // 95 min
+    M0: 2.5,
     orbitSpeed: 1.5,
     rotationSpeed: 0.02,
     diameter: '3.2 m flat panel + solar array',
@@ -552,6 +600,8 @@ export const ARTIFICIAL_SATELLITES_DATA = [
     visualTemplate: 'probe',
     color: 0xf43f5e,
     orbitalDistance: 38.0,
+    orbitalPeriodDays: 341.0,
+    M0: 4.4,
     orbitSpeed: 0.42,
     rotationSpeed: 0.01,
     diameter: '1.3 m bus + 8.5 m solar arrays',

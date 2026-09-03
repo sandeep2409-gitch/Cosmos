@@ -15,7 +15,7 @@ import { HelpModal } from './ui/helpModal.js';
 import { InfoPanel } from './ui/infoPanel.js';
 
 /**
- * Main Application Core — Contextual Satellite Visibility System
+ * Main Application Core — Segment 6 Wikipedia & Clickable Satellite System
  */
 class Application {
   constructor() {
@@ -60,16 +60,19 @@ class Application {
     // Register 8 Planets as interactive targets
     this.planetFactory.planets.forEach(p => {
       this.interactionManager.registerTarget(p.planetMesh, p.config);
+      if (p.labelSprite) this.interactionManager.registerTarget(p.labelSprite, p.config);
     });
 
     // Register 17 Natural Satellite Moons as interactive targets
     this.planetFactory.satelliteFactory.satellites.forEach(s => {
       this.interactionManager.registerTarget(s.moonMesh, s.config);
+      if (s.labelSprite) this.interactionManager.registerTarget(s.labelSprite, s.config);
     });
 
     // Register 50+ Artificial Satellites & Spacecraft as interactive targets
     this.planetFactory.artificialSatelliteFactory.spacecraftList.forEach(s => {
       this.interactionManager.registerTarget(s.modelMesh, s.config);
+      if (s.labelSprite) this.interactionManager.registerTarget(s.labelSprite, s.config);
     });
 
     // 6. UI Modules
@@ -120,22 +123,13 @@ class Application {
   }
 
   setupCallbacks() {
-    // Scale Mode Toggle (Visual vs Real AU Scale)
-    this.uiOverlay.onScaleToggleCallback = (mode) => {
-      this.planetFactory.setScaleMode(mode);
-      this.sun.setScaleMode(mode);
-      this.uiOverlay.updateDisclaimer(mode);
-      this.cameraAnimator.setOverviewForScaleMode(mode);
-      this.cameraAnimator.resetToOverview();
-    };
-
     // On Celestial Object Selected (Planet, Moon, or Artificial Spacecraft)
     this.interactionManager.onSelectCallback = (data, mesh) => {
       this.infoPanel.show(data);
       this.topNav.updateBreadcrumb(data);
       this.uiOverlay.setFocusButtonVisible(true);
 
-      // Contextual Satellite Visibility: Show satellite orbits & labels only for active planet
+      // Contextual Satellite & Orbit Visibility: Show satellite orbits & labels for active parent body
       let parentId = null;
       if (data.type === 'planet' || data.type === 'star') {
         parentId = data.id;
@@ -145,9 +139,10 @@ class Application {
         parentId = data.parentPlanetId;
       }
 
+      // Activate satellite orbits and satellite labels for this parent body
       this.planetFactory.setActiveFocusParent(parentId);
 
-      const radius = mesh.userData.radius || data.radius || 2.0;
+      const radius = mesh.userData.radius || data.radius || 1.5;
       this.cameraAnimator.focusOnObject(mesh, radius);
     };
 
@@ -179,7 +174,7 @@ class Application {
     const handleFocus = () => {
       if (this.interactionManager.selectedMesh) {
         const mesh = this.interactionManager.selectedMesh;
-        const radius = mesh.userData.radius || 2.0;
+        const radius = mesh.userData.radius || 1.5;
         this.cameraAnimator.focusOnObject(mesh, radius);
       }
     };
@@ -225,7 +220,7 @@ class Application {
     // Update Planet, Moon & Artificial Spacecraft Orbital Physics
     this.planetFactory.update(delta, this.timeMultiplier);
 
-    // Update Hover & Selection Ring Animations
+    // Update Hover & Selection System
     this.interactionManager.update(delta);
 
     // Update Camera Lerp Transitions & Orbital Focus Tracking

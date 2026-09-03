@@ -1,5 +1,5 @@
 /**
- * Centralized Astronomical Dataset for COSMOS Planets & Sun
+ * Centralized Astronomical Dataset for COSMOS Planets & Sun with Keplerian Live Time Parameters
  */
 
 export const SUN_CONFIG = {
@@ -8,7 +8,7 @@ export const SUN_CONFIG = {
   wikipediaTitle: 'Sun',
   type: 'Star (G2V Yellow Dwarf)',
   radius: 14.0,
-  realRadius: 109.0, // Earth radii scale ratio
+  realRadius: 109.0,
   distance: 0,
   realDistance: 0,
   color: 0xffaa00,
@@ -28,7 +28,9 @@ export const PLANETS_DATA = [
     radius: 1.2,
     realRadius: 0.38,
     distance: 28.0,
-    realDistance: 39.0, // AU * 100
+    realDistance: 39.0,
+    orbitalPeriodDays: 87.969,
+    M0: 4.402, // Mean anomaly at J2000 epoch
     orbitSpeed: 2.2,
     rotationSpeed: 0.004,
     axialTilt: 0.03,
@@ -55,8 +57,10 @@ export const PLANETS_DATA = [
     realRadius: 0.95,
     distance: 44.0,
     realDistance: 72.0,
+    orbitalPeriodDays: 224.701,
+    M0: 3.176,
     orbitSpeed: 1.6,
-    rotationSpeed: -0.002, // Retrograde rotation
+    rotationSpeed: -0.002,
     axialTilt: 177.3,
     color: 0xe3bb76,
     atmosphereColor: 0xffd89b,
@@ -82,6 +86,8 @@ export const PLANETS_DATA = [
     realRadius: 1.0,
     distance: 65.0,
     realDistance: 100.0,
+    orbitalPeriodDays: 365.256,
+    M0: 6.24,
     orbitSpeed: 1.2,
     rotationSpeed: 0.015,
     axialTilt: 23.44,
@@ -96,7 +102,7 @@ export const PLANETS_DATA = [
     rotationPeriod: '24 hours',
     mass: '5.97 × 10²⁴ kg',
     surfaceTemp: '-89 °C to 58 °C (avg 15 °C)',
-    atmosphere: ' Nitrogen (78%), Oxygen (21%), Argon (0.9%)',
+    atmosphere: 'Nitrogen (78%), Oxygen (21%), Argon (0.9%)',
     description: 'The third planet from the Sun and the only astronomical object known to harbor life. Liquid water oceans cover 71% of its surface.',
     majorSatelliteIds: ['moon']
   },
@@ -109,6 +115,8 @@ export const PLANETS_DATA = [
     realRadius: 0.53,
     distance: 90.0,
     realDistance: 152.0,
+    orbitalPeriodDays: 686.98,
+    M0: 0.338,
     orbitSpeed: 0.96,
     rotationSpeed: 0.014,
     axialTilt: 25.19,
@@ -136,6 +144,8 @@ export const PLANETS_DATA = [
     realRadius: 11.2,
     distance: 140.0,
     realDistance: 520.0,
+    orbitalPeriodDays: 4332.589,
+    M0: 0.347,
     orbitSpeed: 0.52,
     rotationSpeed: 0.035,
     axialTilt: 3.13,
@@ -163,6 +173,8 @@ export const PLANETS_DATA = [
     realRadius: 9.45,
     distance: 195.0,
     realDistance: 958.0,
+    orbitalPeriodDays: 10759.22,
+    M0: 5.57,
     orbitSpeed: 0.38,
     rotationSpeed: 0.03,
     axialTilt: 26.73,
@@ -196,9 +208,11 @@ export const PLANETS_DATA = [
     realRadius: 4.0,
     distance: 245.0,
     realDistance: 1920.0,
+    orbitalPeriodDays: 30685.4,
+    M0: 2.48,
     orbitSpeed: 0.26,
     rotationSpeed: -0.022,
-    axialTilt: 97.77, // Rotates on its side
+    axialTilt: 97.77,
     color: 0x4b70dd,
     atmosphereColor: 0x38bdf8,
     orbitColor: 0x0284c7,
@@ -223,6 +237,8 @@ export const PLANETS_DATA = [
     realRadius: 3.88,
     distance: 290.0,
     realDistance: 3007.0,
+    orbitalPeriodDays: 60189.0,
+    M0: 5.31,
     orbitSpeed: 0.2,
     rotationSpeed: 0.025,
     axialTilt: 28.32,
@@ -235,10 +251,23 @@ export const PLANETS_DATA = [
     distanceFromSun: '4.50 billion km (30.07 AU)',
     orbitalPeriod: '164.8 years',
     rotationPeriod: '16.1 hours',
-    mass: '1.02 × 10²6 kg (17.1 Earths)',
+    mass: '1.02 × 10²⁶ kg (17.1 Earths)',
     surfaceTemp: '-200 °C',
     atmosphere: 'Hydrogen (80%), Helium (19%), Methane (1.5%)',
     description: 'The outermost major planet in the Solar System. An ice giant known for supersonic winds reaching over 2,100 km/h.',
     majorSatelliteIds: ['triton']
   }
 ];
+
+/**
+ * Calculates real-time astronomical orbital angle for a planet at any Date
+ */
+export function getLiveOrbitAngle(config, date = new Date()) {
+  const J2000 = new Date('2000-01-01T12:00:00Z').getTime();
+  const elapsedDays = (date.getTime() - J2000) / (1000 * 60 * 60 * 24);
+  const period = config.orbitalPeriodDays || 365.256;
+  const m0 = config.M0 || 0;
+  
+  const meanAnomaly = m0 + (2 * Math.PI / period) * elapsedDays;
+  return meanAnomaly % (Math.PI * 2);
+}

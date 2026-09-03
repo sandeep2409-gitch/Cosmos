@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { SATELLITES_DATA } from '../config/satellitesData.js';
 import { TextureGenerator } from './textureGen.js';
+import { getLiveOrbitAngle } from '../config/planetsData.js';
 
 /**
  * Factory & Controller for 3D Natural Satellites (Moons)
@@ -125,7 +126,7 @@ export class SatelliteFactory {
       moonMesh,
       labelSprite,
       orbitLine,
-      orbitAngle: Math.random() * Math.PI * 2
+      orbitAngle: getLiveOrbitAngle(config, new Date())
     };
   }
 

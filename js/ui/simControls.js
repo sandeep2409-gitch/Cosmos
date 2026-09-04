@@ -1,5 +1,6 @@
 /**
- * Simulation Control Bar Component (Time Speed, Display Toggles & Layer Controls)
+ * Simulation Control Burger Menu Component
+ * Manages Time Speed / Pause, Display Toggles, and Satellite Layers inside a Burger Menu.
  */
 export class SimControls {
   constructor(onTimeSpeedChange, onToggleOrbits, onToggleLabels, onToggleLayer) {
@@ -16,20 +17,45 @@ export class SimControls {
   }
 
   init() {
-    // Time Speed buttons
+    const burgerBtn = document.getElementById('sim-burger-btn');
+    const menuPanel = document.getElementById('sim-controls-menu');
+    const closeBtn = document.getElementById('sim-menu-close');
+
+    // 1. Toggle Burger Menu Open / Closed
+    if (burgerBtn && menuPanel) {
+      burgerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menuPanel.classList.toggle('hidden');
+        burgerBtn.classList.toggle('active');
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menuPanel.classList.add('hidden');
+          burgerBtn.classList.remove('active');
+        });
+      }
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!menuPanel.contains(e.target) && !burgerBtn.contains(e.target)) {
+          menuPanel.classList.add('hidden');
+          burgerBtn.classList.remove('active');
+        }
+      });
+    }
+
+    // 2. Time Speed & Pause Buttons
     const speedButtons = document.querySelectorAll('.speed-btn');
     speedButtons.forEach(btn => {
       btn.addEventListener('click', () => {
-        speedButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
         const speedVal = parseFloat(btn.getAttribute('data-speed'));
-        this.speed = speedVal;
-        if (this.onTimeSpeedChange) this.onTimeSpeedChange(this.speed);
+        this.setSpeed(speedVal);
       });
     });
 
-    // Display Toggles
+    // 3. Display Toggles (Orbit Paths)
     const toggleOrbits = document.getElementById('toggle-orbit-paths');
     if (toggleOrbits) {
       toggleOrbits.addEventListener('change', (e) => {
@@ -38,6 +64,7 @@ export class SimControls {
       });
     }
 
+    // Display Toggles (Labels)
     const toggleLabels = document.getElementById('toggle-planet-labels');
     if (toggleLabels) {
       toggleLabels.addEventListener('change', (e) => {
@@ -46,7 +73,7 @@ export class SimControls {
       });
     }
 
-    // Layer Checkboxes
+    // 4. Remaining Layer Checkboxes
     const layerCheckboxes = document.querySelectorAll('.layer-checkbox');
     layerCheckboxes.forEach(cb => {
       cb.addEventListener('change', (e) => {
@@ -56,9 +83,14 @@ export class SimControls {
     });
   }
 
+  /**
+   * Set simulation speed and update active button & burger badge state
+   */
   setSpeed(speedVal) {
     this.speed = speedVal;
+    const speedBadge = document.getElementById('sim-speed-badge');
     const speedButtons = document.querySelectorAll('.speed-btn');
+
     speedButtons.forEach(btn => {
       if (parseFloat(btn.getAttribute('data-speed')) === speedVal) {
         btn.classList.add('active');
@@ -66,6 +98,16 @@ export class SimControls {
         btn.classList.remove('active');
       }
     });
+
+    if (speedBadge) {
+      speedBadge.textContent = speedVal === 0 ? 'PAUSED' : `${speedVal}×`;
+      if (speedVal === 0) {
+        speedBadge.classList.add('paused');
+      } else {
+        speedBadge.classList.remove('paused');
+      }
+    }
+
     if (this.onTimeSpeedChange) this.onTimeSpeedChange(this.speed);
   }
 }

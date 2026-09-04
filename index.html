@@ -81,73 +81,91 @@
     </nav>
   </header>
 
-  <!-- 5. Controls Keyboard Hint Badge -->
-  <div class="app-controls-hint">
-    <div class="control-badge"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move</div>
-    <div class="control-badge"><kbd>Space</kbd>/<kbd>Shift</kbd> Elevate</div>
-    <div class="control-badge"><kbd>R</kbd> Reset</div>
-    <div class="control-badge"><span class="mouse-icon"><img src="assets/icons/mouse.png" class="icon-png" alt="Mouse" /></span> Drag to Orbit / Click Object</div>
-  </div>
-
-  <!-- 6. Simulation Control Bar (Bottom HUD) -->
-  <div id="sim-controls-bar" class="sim-controls-bar">
-    <!-- Time Speed Selector -->
-    <div class="sim-section">
-      <span class="sim-label">TIME SPEED</span>
-      <div class="speed-btn-group">
-        <button class="speed-btn" data-speed="0">PAUSE</button>
-        <button class="speed-btn active" data-speed="1">1×</button>
-        <button class="speed-btn" data-speed="10">10×</button>
-        <button class="speed-btn" data-speed="100">100×</button>
-        <button class="speed-btn" data-speed="1000">1000×</button>
+  <!-- 6. Simulation Control Bar (Bottom HUD Burger Menu) -->
+  <div id="sim-controls-wrapper" class="sim-controls-wrapper">
+    <!-- Burger Trigger Button -->
+    <button id="sim-burger-btn" class="sim-burger-btn" title="Simulation Controls Menu">
+      <div class="burger-icon">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
-    </div>
+      <span class="sim-burger-title">SIM CONTROLS</span>
+      <span id="sim-speed-badge" class="sim-speed-badge">1×</span>
+    </button>
 
-    <div class="sim-divider"></div>
-
-    <!-- Display Toggles -->
-    <div class="sim-section">
-      <span class="sim-label">DISPLAY</span>
-      <div class="toggle-group">
-        <label class="switch-label">
-          <input type="checkbox" id="toggle-orbit-paths" checked>
-          <span class="switch-slider"></span>
-          <span class="switch-text">Orbit Paths</span>
-        </label>
-        <label class="switch-label">
-          <input type="checkbox" id="toggle-planet-labels" checked>
-          <span class="switch-slider"></span>
-          <span class="switch-text">Labels</span>
-        </label>
+    <!-- Burger Menu Popup Panel -->
+    <div id="sim-controls-menu" class="sim-controls-menu hidden">
+      <div class="sim-menu-header">
+        <span class="sim-menu-title">SIMULATION CONTROLS</span>
+        <button id="sim-menu-close" class="sim-menu-close" title="Close">&times;</button>
       </div>
-    </div>
 
-    <div class="sim-divider"></div>
+      <!-- Time Speed & Pause -->
+      <div class="sim-menu-section">
+        <div class="sim-menu-section-title">TIME SPEED &amp; PAUSE</div>
+        <div class="speed-btn-group">
+          <button class="speed-btn" data-speed="0">PAUSE</button>
+          <button class="speed-btn active" data-speed="1">1×</button>
+          <button class="speed-btn" data-speed="10">10×</button>
+          <button class="speed-btn" data-speed="100">100×</button>
+          <button class="speed-btn" data-speed="1000">1000×</button>
+        </div>
+      </div>
 
-    <!-- Satellite Layer Toggles -->
-    <div class="sim-section">
-      <span class="sim-label">LAYERS</span>
-      <div class="toggle-group">
-        <label class="switch-label">
-          <input type="checkbox" class="layer-checkbox" data-layer="moons" checked>
-          <span class="switch-slider"></span>
-          <span class="switch-text">Moons</span>
-        </label>
-        <label class="switch-label">
-          <input type="checkbox" class="layer-checkbox" data-layer="pioneers" checked>
-          <span class="switch-slider"></span>
-          <span class="switch-text">Pioneers</span>
-        </label>
-        <label class="switch-label">
-          <input type="checkbox" class="layer-checkbox" data-layer="earth-sats" checked>
-          <span class="switch-slider"></span>
-          <span class="switch-text">Earth Satellites</span>
-        </label>
-        <label class="switch-label">
-          <input type="checkbox" class="layer-checkbox" data-layer="deep-space" checked>
-          <span class="switch-slider"></span>
-          <span class="switch-text">Deep Space</span>
-        </label>
+      <!-- Display Options -->
+      <div class="sim-menu-section">
+        <div class="sim-menu-section-title">DISPLAY OPTIONS</div>
+        <div class="toggle-group-vertical">
+          <label class="switch-label">
+            <input type="checkbox" id="toggle-orbit-paths" checked>
+            <span class="switch-slider"></span>
+            <span class="switch-text">Orbit Paths</span>
+          </label>
+          <label class="switch-label">
+            <input type="checkbox" id="toggle-planet-labels" checked>
+            <span class="switch-slider"></span>
+            <span class="switch-text">Planet Labels</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Remaining Layers -->
+      <div class="sim-menu-section">
+        <div class="sim-menu-section-title">REMAINING LAYERS</div>
+        <div class="toggle-group-vertical">
+          <label class="switch-label">
+            <input type="checkbox" class="layer-checkbox" data-layer="moons" checked>
+            <span class="switch-slider"></span>
+            <span class="switch-text">Moons</span>
+          </label>
+          <label class="switch-label">
+            <input type="checkbox" class="layer-checkbox" data-layer="pioneers" checked>
+            <span class="switch-slider"></span>
+            <span class="switch-text">Pioneers</span>
+          </label>
+          <label class="switch-label">
+            <input type="checkbox" class="layer-checkbox" data-layer="earth-sats" checked>
+            <span class="switch-slider"></span>
+            <span class="switch-text">Earth Satellites</span>
+          </label>
+          <label class="switch-label">
+            <input type="checkbox" class="layer-checkbox" data-layer="deep-space" checked>
+            <span class="switch-slider"></span>
+            <span class="switch-text">Deep Space Missions</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Controls & Navigation Shortcuts -->
+      <div class="sim-menu-section">
+        <div class="sim-menu-section-title">CONTROLS &amp; SHORTCUTS</div>
+        <div class="controls-hint-vertical">
+          <div class="control-badge-item"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> <span>Translate Camera</span></div>
+          <div class="control-badge-item"><kbd>Space</kbd> / <kbd>Shift</kbd> <span>Elevate / Lower</span></div>
+          <div class="control-badge-item"><kbd>R</kbd> <span>Reset System View</span></div>
+          <div class="control-badge-item"><img src="assets/icons/mouse.png" class="icon-png" alt="Mouse" /> <span>Drag to Orbit / Click Object</span></div>
+        </div>
       </div>
     </div>
   </div>

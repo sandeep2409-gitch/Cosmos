@@ -32,11 +32,11 @@ app.use(errorHandler);
 // 4. Start Server on Configurable Port
 const server = app.listen(ENV.PORT, () => {
   console.log(`================================================`);
-  console.log(`🚀 COSMOS Backend API running on port ${ENV.PORT}`);
-  console.log(`📡 Health Check: http://localhost:${ENV.PORT}/api/v1/health`);
-  console.log(`🌌 Objects API:  http://localhost:${ENV.PORT}/api/v1/objects`);
-  console.log(`📚 Wikipedia:    http://localhost:${ENV.PORT}/api/v1/wikipedia/earth`);
-  console.log(`🤖 AI Explain:   http://localhost:${ENV.PORT}/api/v1/ai/explain`);
+  console.log(`[API] COSMOS Backend API running on port ${ENV.PORT}`);
+  console.log(`[HEALTH] Health Check: http://localhost:${ENV.PORT}/api/v1/health`);
+  console.log(`[OBJECTS] Objects API:  http://localhost:${ENV.PORT}/api/v1/objects`);
+  console.log(`[WIKI] Wikipedia:    http://localhost:${ENV.PORT}/api/v1/wikipedia/earth`);
+  console.log(`[AI] AI Explain:   http://localhost:${ENV.PORT}/api/v1/ai/explain`);
   console.log(`================================================`);
 });
 

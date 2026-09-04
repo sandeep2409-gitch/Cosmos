@@ -46,7 +46,7 @@ export class TopNav {
           </button>
         `).join('')}
 
-        <div class="drawer-section-title">🚀 ISRO MISSIONS</div>
+        <div class="drawer-section-title"><img src="assets/icons/rocket.png" class="icon-png" alt="Rocket" /> ISRO MISSIONS</div>
         ${isroMissions.map(obj => `
           <button class="drawer-item" data-id="${obj.id}">
             <span class="drawer-item-dot" style="background-color: #f59e0b"></span>
@@ -55,7 +55,7 @@ export class TopNav {
           </button>
         `).join('')}
 
-        <div class="drawer-section-title">🔭 SPACE TELESCOPES</div>
+        <div class="drawer-section-title"><img src="assets/icons/telescope.png" class="icon-png" alt="Telescope" /> SPACE TELESCOPES</div>
         ${telescopes.map(obj => `
           <button class="drawer-item" data-id="${obj.id}">
             <span class="drawer-item-dot" style="background-color: #818cf8"></span>
@@ -64,7 +64,7 @@ export class TopNav {
           </button>
         `).join('')}
 
-        <div class="drawer-section-title">🛰️ SPACE PIONEERS</div>
+        <div class="drawer-section-title"><img src="assets/icons/satellite.png" class="icon-png" alt="Satellite" /> SPACE PIONEERS</div>
         ${pioneers.map(obj => `
           <button class="drawer-item" data-id="${obj.id}">
             <span class="drawer-item-dot" style="background-color: #d1d5db"></span>

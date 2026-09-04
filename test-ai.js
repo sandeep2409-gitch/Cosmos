@@ -3,7 +3,7 @@
  * Run: node test-ai.js
  */
 
-const BASE = 'http://localhost:5000/api/v1';
+const BASE = 'http://localhost:5001/api/v1';
 
 async function post(body) {
   const res = await fetch(`${BASE}/ai/explain`, {
@@ -15,7 +15,7 @@ async function post(body) {
 }
 
 async function runTests() {
-  console.log('\n🤖 COSMOS AI Endpoint Test Suite\n' + '='.repeat(48));
+  console.log('\n[AI] COSMOS AI Endpoint Test Suite\n' + '='.repeat(48));
 
   const tests = [
     // Valid objects
@@ -35,7 +35,7 @@ async function runTests() {
   ];
 
   for (const t of tests) {
-    process.stdout.write(`\n▸ ${t.desc}... `);
+    process.stdout.write(`\n> ${t.desc}... `);
     try {
       const start = Date.now();
       const result = await post(t);
@@ -43,23 +43,23 @@ async function runTests() {
 
       if (result.success) {
         const preview = result.explanation.substring(0, 80).replace(/\n/g, ' ');
-        console.log(`✅ OK [${ms}ms] [cached:${result.cached}]\n  "${preview}..."`);
+        console.log(`[OK] [${ms}ms] [cached:${result.cached}]\n  "${preview}..."`);
       } else {
-        console.log(`⚠ SOFT FAIL [${ms}ms] code:${result.errorCode}\n  ${result.error}`);
+        console.log(`[WARN] SOFT FAIL [${ms}ms] code:${result.errorCode}\n  ${result.error}`);
       }
     } catch (err) {
-      console.log(`❌ NETWORK ERROR: ${err.message}`);
+      console.log(`[ERROR] NETWORK ERROR: ${err.message}`);
     }
   }
 
   // Security check — verify no API key in response
-  console.log('\n\n🔒 Security Check');
+  console.log('\n\n[SECURITY] Security Check');
   const r = await post({ objectId: 'earth', mode: 'beginner' });
   const json = JSON.stringify(r);
   const hasKey = json.includes('AI_API_KEY') || json.includes('Bearer') || json.includes('AQ.');
-  console.log(hasKey ? '❌ FAIL: API key found in response!' : '✅ PASS: No API key in response');
+  console.log(hasKey ? '[FAIL] FAIL: API key found in response!' : '[PASS] PASS: No API key in response');
 
-  console.log('\n' + '='.repeat(48) + '\n✓ Test suite complete.\n');
+  console.log('\n' + '='.repeat(48) + '\n[COMPLETE] Test suite complete.\n');
 }
 
 runTests().catch(console.error);

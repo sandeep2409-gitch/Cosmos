@@ -55,7 +55,7 @@ export class SatelliteFactory {
     ctx.font = 'bold 26px "Space Grotesk", sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`🌙 ${name.toUpperCase()}`, 192, 48);
+    ctx.fillText(name.toUpperCase(), 192, 48);
 
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;

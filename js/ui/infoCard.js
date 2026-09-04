@@ -62,8 +62,8 @@ export class InfoCard {
       </div>
 
       <div class="info-actions">
-        <button class="btn-action btn-focus" id="info-btn-focus">🎯 Focus Target</button>
-        <button class="btn-action btn-reset" id="info-btn-reset">🌌 Reset View</button>
+        <button class="btn-action btn-focus" id="info-btn-focus"><img src="assets/icons/target.png" class="icon-png" alt="Target" /> Focus Target</button>
+        <button class="btn-action btn-reset" id="info-btn-reset"><img src="assets/icons/galaxy.png" class="icon-png" alt="Galaxy" /> Reset View</button>
       </div>
     `;
 

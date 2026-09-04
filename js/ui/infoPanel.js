@@ -118,12 +118,12 @@ export class InfoPanel {
 
       <div class="panel-tabs-header">
         <button class="tab-btn ${this.activeTab === 'overview' ? 'active' : ''}" data-tab="overview">Overview</button>
-        <button class="tab-btn ${this.activeTab === 'wiki' ? 'active' : ''}" data-tab="wiki">📚 Wikipedia</button>
+        <button class="tab-btn ${this.activeTab === 'wiki' ? 'active' : ''}" data-tab="wiki"><img src="assets/icons/book.png" class="icon-png" alt="Wiki" /> Wikipedia</button>
         <button class="tab-btn ${this.activeTab === 'science' ? 'active' : ''}" data-tab="science">${isArtificial ? 'Mission & History' : 'Scientific Data'}</button>
         <button class="tab-btn ${this.activeTab === 'satellites' ? 'active' : ''}" data-tab="satellites">
           ${isArtificial || isMoon ? 'Parent Body' : 'Satellites'}
         </button>
-        <button class="tab-btn ${this.activeTab === 'ai' ? 'active' : ''}" data-tab="ai">✦ AI</button>
+        <button class="tab-btn ${this.activeTab === 'ai' ? 'active' : ''}" data-tab="ai"><img src="assets/icons/robot.png" class="icon-png" alt="AI" /> AI</button>
       </div>
 
       <div class="panel-tab-body">
@@ -136,9 +136,9 @@ export class InfoPanel {
             &larr; BACK TO ${parentPlanet.name.toUpperCase()}
           </button>
         ` : `
-          <button class="btn-action btn-focus" id="panel-btn-focus">🎯 Focus Target</button>
+          <button class="btn-action btn-focus" id="panel-btn-focus"><img src="assets/icons/target.png" class="icon-png" alt="Target" /> Focus Target</button>
         `}
-        <button class="btn-action btn-reset" id="panel-btn-reset">🌌 Reset View</button>
+        <button class="btn-action btn-reset" id="panel-btn-reset"><img src="assets/icons/galaxy.png" class="icon-png" alt="Galaxy" /> Reset View</button>
       </div>
     `;
 
@@ -291,7 +291,7 @@ export class InfoPanel {
           <div class="moon-badges-container">
             ${data.majorSatelliteIds.map(mId => {
               const moon = SATELLITES_DATA.find(s => s.id === mId);
-              return moon ? `<button class="moon-badge" data-moon-id="${moon.id}">🌙 ${moon.name}</button>` : '';
+              return moon ? `<button class="moon-badge" data-moon-id="${moon.id}"><img src="assets/icons/moon.png" class="icon-png" alt="Moon" /> ${moon.name}</button>` : '';
             }).join('')}
           </div>
         ` : ''}
@@ -312,7 +312,7 @@ export class InfoPanel {
       if (!this.wikiData) {
         return `
           <div class="panel-placeholder">
-            <span class="ph-icon">📚</span>
+            <span class="ph-icon"><img src="assets/icons/book.png" class="icon-png-lg" alt="Wiki" /></span>
             <span class="ph-title">Wikipedia Information Unavailable</span>
             <span class="ph-text">Showing COSMOS local scientific data.</span>
           </div>
@@ -407,7 +407,7 @@ export class InfoPanel {
               if (!moon) return '';
               return `
                 <div class="moon-card moon-badge" data-moon-id="${moon.id}">
-                  <div class="mc-icon">🌙</div>
+                  <div class="mc-icon"><img src="assets/icons/moon.png" class="icon-png" alt="Moon" /></div>
                   <div class="mc-info">
                     <span class="mc-name">${moon.name}</span>
                     <span class="mc-sub">${moon.diameter} &bull; ${moon.orbitalPeriod}</span>
@@ -422,7 +422,7 @@ export class InfoPanel {
 
       return `
         <div class="panel-placeholder">
-          <span class="ph-icon">🛰️</span>
+          <span class="ph-icon"><img src="assets/icons/satellite.png" class="icon-png-lg" alt="Satellite" /></span>
           <span class="ph-title">No Major Moons Configured</span>
           <span class="ph-text">This planet does not have major natural satellites in the current dataset.</span>
         </div>
@@ -440,9 +440,9 @@ export class InfoPanel {
   _renderAITab(data) {
     const quickQuestions = this._getQuickQuestions(data);
     const modes = [
-      { key: 'beginner', label: '🌱 Beginner' },
-      { key: 'student', label: '🎓 Student' },
-      { key: 'deepdive', label: '🔬 Deep Dive' }
+      { key: 'beginner', label: '<img src="assets/icons/beginner.png" class="icon-png" alt="Beginner" /> Beginner' },
+      { key: 'student', label: '<img src="assets/icons/student.png" class="icon-png" alt="Student" /> Student' },
+      { key: 'deepdive', label: '<img src="assets/icons/microscope.png" class="icon-png" alt="Deep Dive" /> Deep Dive' }
     ];
 
     return `
@@ -483,7 +483,7 @@ export class InfoPanel {
         >
           ${this.aiLoading
             ? '<span class="ai-spinner"></span> Generating explanation...'
-            : '✦ Generate AI Explanation'
+            : '<img src="assets/icons/robot.png" class="icon-png" alt="AI" /> Generate AI Explanation'
           }
         </button>
 
@@ -498,7 +498,7 @@ export class InfoPanel {
     if (!this._aiRequested && !this.aiLoading) {
       return `
         <div class="ai-idle-prompt">
-          <span class="ai-idle-icon">✦</span>
+          <span class="ai-idle-icon"><img src="assets/icons/robot.png" class="icon-png-lg" alt="AI" /></span>
           <span class="ai-idle-text">Choose a mode and click <b>Generate AI Explanation</b> to get an AI-powered explanation of ${data.name}.</span>
           <span class="ai-idle-disclaimer">AI explanations are grounded in COSMOS and Wikipedia data. Factual information always comes from scientific sources.</span>
         </div>
@@ -520,7 +520,7 @@ export class InfoPanel {
     if (this.aiError) {
       return `
         <div class="ai-error-block">
-          <span class="ai-error-icon">⚠</span>
+          <span class="ai-error-icon"><img src="assets/icons/warning.png" class="icon-png" alt="Warning" /></span>
           <span class="ai-error-msg">${this.aiError}</span>
           <span class="ai-error-sub">You can still explore all factual information in the other tabs above.</span>
           <button id="ai-again-btn" class="ai-again-btn">Try Again</button>
@@ -539,7 +539,7 @@ export class InfoPanel {
       return `
         <div class="ai-output-block">
           <div class="ai-output-header">
-            <span class="ai-output-badge">✦ AI EXPLANATION</span>
+            <span class="ai-output-badge"><img src="assets/icons/robot.png" class="icon-png" alt="AI" /> AI EXPLANATION</span>
             <span class="ai-output-mode-tag">${this.aiMode.toUpperCase()}</span>
           </div>
           <div class="ai-output-body">

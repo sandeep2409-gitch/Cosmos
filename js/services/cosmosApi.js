@@ -7,7 +7,7 @@ import { ARTIFICIAL_SATELLITES_DATA } from '../config/artificialSatellitesData.j
  * Fetches object metadata & Wikipedia summaries from Express backend with automatic local fallback.
  */
 export class CosmosApi {
-  static baseUrl = 'http://localhost:5000/api/v1';
+  static baseUrl = 'http://localhost:5001/api/v1';
 
   static async getObjectById(id) {
     try {

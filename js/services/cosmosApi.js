@@ -72,8 +72,39 @@ export class CosmosApi {
       }
       return { success: false, error: 'AI service returned an error.', errorCode: 'HTTP_ERROR' };
     } catch (err) {
-      console.warn(`[COSMOS API] AI backend endpoint unreachable for '${id}'.`);
-      return { success: false, error: 'AI service is not reachable. Check that the backend server is running.', errorCode: 'NETWORK_ERROR' };
+      console.warn(`[COSMOS API] AI backend endpoint unreachable for '${id}'. Using local static fallback.`);
+      const obj = await this.getObjectById(id);
+      if (!obj) {
+        return { success: false, error: `Object '${id}' not found.`, errorCode: 'OBJECT_NOT_FOUND' };
+      }
+      return {
+        success: true,
+        objectId: id,
+        objectName: obj.name,
+        mode,
+        source: 'COSMOS Scientific Engine (Offline Fallback)',
+        explanation: this._generateClientFallback(obj, mode, question),
+        generatedAt: new Date().toISOString(),
+        cached: false
+      };
+    }
+  }
+
+  static _generateClientFallback(obj, mode, question) {
+    const name = obj.name || 'Celestial Object';
+    const type = obj.type || obj.category || 'celestial body';
+    const desc = obj.description || '';
+
+    if (question) {
+      return `${name} (${type}) is a prominent subject of astronomical study.\n\nRegarding "${question}": Based on COSMOS scientific records, ${desc}\n\nKey parameters for ${name}: Diameter: ${obj.diameter || 'N/A'}, Orbital Period: ${obj.orbitalPeriod || 'N/A'}, Rotation Period: ${obj.rotationPeriod || 'N/A'}.`;
+    }
+
+    if (mode === 'beginner') {
+      return `${name} is a fascinating ${type} in our solar system. ${desc}\n\nWith a diameter of ${obj.diameter || 'N/A'} and an orbital period of ${obj.orbitalPeriod || 'N/A'}, ${name} offers space explorers vital insights into planetary astronomy.`;
+    } else if (mode === 'student') {
+      return `${name} is classified as a ${type}. ${desc}\n\nPhysical and orbital metrics: Diameter: ${obj.diameter || 'N/A'}, Mass: ${obj.mass || 'N/A'}, Surface Temperature: ${obj.surfaceTemp || 'N/A'}, and Orbital Period: ${obj.orbitalPeriod || 'N/A'}.`;
+    } else {
+      return `${name} represents a major target of observational planetary science. Categorized as a ${type}, it plays a distinct role in solar system dynamics.\n\n${desc}\n\nDetailed profile: Diameter: ${obj.diameter || 'N/A'} | Mass: ${obj.mass || 'N/A'} | Atmosphere: ${obj.atmosphere || 'N/A'} | Composition: ${obj.composition || 'N/A'} | Rotation: ${obj.rotationPeriod || 'N/A'}.`;
     }
   }
 }
